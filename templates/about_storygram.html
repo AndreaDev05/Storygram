@@ -1,0 +1,24 @@
+<!-- qui diciamo a jinja di estendere il nostro file html inserendolo dentro il file indicato -->
+{% extends "layout_base.html" %}
+
+{% block content %}
+<!-- Inserendo delle graffe all'interno delle graffe di jinja si può indicare una variabile passata con python -->
+<h2 style="text-align: center;"> {{title}} </h2>
+
+<p>
+    Progetto di TPSIT sull'utilizzo del framework python "Flask". <br>
+    Il progetto comprenderà un social network ma ambientato in un periodo storico ben definito.
+</p>
+
+<p>
+    Componenti del team di sviluppo:
+</p>
+<ul>
+    <li> De Panni Andrea </li>
+    <li> Gambardella Giovanni Antonio </li>
+    <li> Matteazzi Andrea </li>
+    <li> Toso Elia </li>
+</ul>
+
+<a href="{{ url_for('login') }}">LOGIN</a>
+{% endblock %}
