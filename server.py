@@ -32,6 +32,73 @@ def login():
     if request.method == "POST":
         return "<h1> login fatto </h1>"
 
+# per registrare un utente
+@server.route('/singup/', methods=["GET", "POST"])
+def singup():
+    if request.method == "GET":
+        return render_template("singup.html")
+    if request.method == "POST":
+        return "<h1> singup fatto </h1>"
+
+# per effettuare il logout
+@server.route('/logout/', methods=["POST"])
+def logout():
+    return "<h1> logout fatto </h1>"
+
+# per visualizzare il profilo dell'utente
+@server.route('/profile/my/')
+def profile():
+    return "<h1> profile </h1>"
+
+# per visualizzare il profilo di un utente
+@server.route('/profile/<username>/')
+def profile_username(username):
+    return f"<h1> profile {username} </h1>"
+
+# per visualizzare un post 
+@server.route('/post/<int:id>/')
+def post_id(id):
+    return f"<h1> post {id} </h1>"
+
+# per visualizzare i commenti di un post
+@server.route('/post/<int:id>/comment/')
+def post_id_comment(id):
+    return f"<h1> post {id} comment </h1>"
+
+# per visualizzare o mettere un  like di un post
+@server.route('/post/<int:id>/like/')
+def post_id_like(id):
+    return f"<h1> post {id} like </h1>"
+
+# per unlike di un post
+@server.route('/post/<int:id>/unlike/')
+def post_id_unlike(id):
+    return f"<h1> post {id} unlike </h1>"
+
+# per  mettere like ad un commento
+@server.route('/post/<int:id>/comment/<int:comment_id>/like/')
+def post_id_comment_id_like(id, comment_id):
+    return f"<h1> post {id} comment {comment_id} like </h1>"
+
+# per unlike di un commento
+@server.route('/post/<int:id>/comment/<int:comment_id>/unlike/')
+def post_id_comment_id_unlike(id, comment_id):
+    return f"<h1> post {id} comment {comment_id} unlike </h1>"
+
+# per eelimianre un commento
+@server.route('/post/<int:id>/comment/<int:comment_id>/delete/')
+def post_id_comment_id_delete(id, comment_id):
+    return f"<h1> post {id} comment {comment_id} delete </h1>"
+
+# per creare un post
+@server.route('/post/create/')
+def post_create():
+    return "<h1> post create </h1>"
+
+# menu impostazioni
+@server.route('/settings/')
+def settings():
+    return "<h1> settings </h1>"
 
 
 #  -------- sezione di avvio server --------
