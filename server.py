@@ -22,10 +22,10 @@ server.secret_key = credentials.chiave_segreta
 # --------------------------------------------------
 # funzione per eseguire una query su database
 def executeQuery(query):
-    connection = pymysql.connect(host='localhost',
-                                user='storygram',
-                                password='storygram',
-                                database='storygram',
+    connection = pymysql.connect(credentials.host,
+                                credentials.user,
+                                credentials.password,
+                                credentials.database,
                                 cursorclass=pymysql.cursors.DictCursor)
 
     try:
@@ -43,13 +43,13 @@ def executeQuery(query):
 
 @server.route('/')
 def home():
-    return render_template("about_storygram.html", title = "About storygram")
+    return render_template("about_storygram.html", title = "About storygram") # !! nome pagina poi da definire !!
 
 # si accettano solo i metodi HTTP GET e POST
 @server.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html") # !! nome pagina poi da definire !!
     if request.method == "POST":
         return "<h1> login fatto </h1>"
 
@@ -71,8 +71,9 @@ def register_user():
         executeQuery(query)
 
         return jsonify({"message": "Utente registrato con successo"}), 200
-
-
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
+    
 # per effettuare il logout
 @server.route('/logout/', methods=["POST"])
 def logout():
@@ -84,29 +85,56 @@ def profile():
     return "<h1> profile </h1>"
 
 # per visualizzare il profilo di un utente
-@server.route('/profile/<username>/')
-def profile_username(username):
-    return f"<h1> profile {username} </h1>"
+@server.route('/profile/<int:user_id>', methods=['GET'])
+def profile(user_id):
+    if request.method == 'GET':
+        # Query per recuperare informazioni sul profilo dell'utente
+        profile_query = f"""
+            SELECT Profilo.*, 
+                COUNT(Post.IDPost) AS NumPost,
+                COUNT(Followers.IDUtenteSeguace) AS NumFollowers,
+                COUNT(Following.IDUtenteSeguito) AS NumFollowing
+            FROM Profilo
+            LEFT JOIN Post ON Profilo.IDProfilo = Post.IDProfiloProvenienza
+            LEFT JOIN Followers ON Profilo.IDProfilo = Followers.IDUtenteSeguito
+            LEFT JOIN Following ON Profilo.IDProfilo = Following.IDUtenteSeguace
+            WHERE Profilo.IDProfilo = {user_id}
+        """
+        profile_info = executeQuery(profile_query)
+
+        # Query per recuperare i post dell'utente
+        posts_query = f"""
+            SELECT * FROM Post
+            WHERE IDProfiloProvenienza = {user_id}
+        """
+        user_posts = executeQuery(posts_query)
+
+        return render_template('profile.html', profile_info=profile_info[0], user_posts=user_posts) # !! nome pagina poi da definire !!
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
-@server.route('/trending')
+@server.route('/trending', methods=['GET'])
 def trending():
-    # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni)
-    query = """
-        SELECT Post.*, 
-            COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
-            COUNT(Commento.IDPostDestinazione) AS NumCommenti
-        FROM Post
-        LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
-        LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
-        WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-        GROUP BY Post.IDPost
-        ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
-    """
-    trending_posts = executeQuery(query) 
+    if request.method == 'GET':
+        # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni)
+        query = """
+            SELECT Post.*, 
+                COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+                COUNT(Commento.IDPostDestinazione) AS NumCommenti
+            FROM Post
+            LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+            LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+            WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+            GROUP BY Post.IDPost
+            ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
+        """
+        trending_posts = executeQuery(query) 
 
-    return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
-
+        # !! nome pagina poi da definire !!
+        return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
 
 # per visualizzare un post 
 @server.route('/post/<int:id>/')
@@ -133,7 +161,9 @@ def post_comment(post_id):
         executeQuery(query)
 
         # aggiorno la pagina dei commenti
-        return redirect(url_for('comments', post_id=post_id))
+        return redirect(url_for('comments', post_id=post_id)) # !! nome pagina poi da definire !!
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
 
 
 # per visualizzare o mettere un  like di un post
@@ -145,16 +175,6 @@ def post_id_like(id):
 @server.route('/post/<int:id>/unlike/')
 def post_id_unlike(id):
     return f"<h1> post {id} unlike </h1>"
-
-# per  mettere like ad un commento
-@server.route('/post/<int:id>/comment/<int:comment_id>/like/')
-def post_id_comment_id_like(id, comment_id):
-    return f"<h1> post {id} comment {comment_id} like </h1>"
-
-# per unlike di un commento
-@server.route('/post/<int:id>/comment/<int:comment_id>/unlike/')
-def post_id_comment_id_unlike(id, comment_id):
-    return f"<h1> post {id} comment {comment_id} unlike </h1>"
 
 # per eelimianre un commento
 @server.route('/post/<int:id>/comment/<int:comment_id>/delete/')
@@ -174,11 +194,13 @@ def create_post():
         executeQuery(query)
 
         # aggiorno lapplicaizone e rindirizzo alla pagina principale 
-        return redirect(url_for('index'))
+        return redirect(url_for('index')) # !! nome pagina poi da definire !!
     
     elif request.method == 'GET':
         # carico la pagina per la creazione di un nuovo post 
-        return render_template('create_post.html')
+        return render_template('create_post.html') # !! nome pagina poi da definire !!
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
 
 # menu impostazioni
 @server.route('/settings/')
