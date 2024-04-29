@@ -88,6 +88,26 @@ def profile():
 def profile_username(username):
     return f"<h1> profile {username} </h1>"
 
+# per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
+@server.route('/trending')
+def trending():
+    # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni)
+    query = """
+        SELECT Post.*, 
+            COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+            COUNT(Commento.IDPostDestinazione) AS NumCommenti
+        FROM Post
+        LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+        LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+        WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY Post.IDPost
+        ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
+    """
+    trending_posts = executeQuery(query) 
+
+    return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+
+
 # per visualizzare un post 
 @server.route('/post/<int:id>/')
 def post_id(id):
