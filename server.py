@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, render_template, url_for, redirect, s
 from datetime import timedelta                                                  # usato nel tempo per la sessione
 import credentials                                                              # usato per importare credenziali utili
 import pymysql.cursors
+import hashlib                                                                   # usato per la conversione della password in hash mediante l'algoritmo sha-256
 
 server = Flask(__name__)
 
@@ -51,7 +52,32 @@ def login():
     if request.method == "GET":
         return render_template("login.html") # !! nome pagina poi da definire !!
     if request.method == "POST":
-        return "<h1> login fatto </h1>"
+        # Recupera i dati inviati dal form
+        codiceUtente = request.form['codiceUtente']
+        password = request.form['passwo']
+
+        # converto la passowrd inserita in hash 
+        password_hash = hashlib.sha256(password)
+        print(password_hash)
+
+
+        # Esegui la query per verificare se l'utente esiste (aggiugnere gestione errori)
+        query = f"SELECT * FROM Utenti WHERE CodiceUtente = {codiceUtente} AND Password = {password_hash} LIMIT 1"
+        executeQuery(query)
+
+        return jsonify({"message": "Utente Loggato con successo"}), 200
+    
+
+    else:
+        return jsonify({"message": "Metodo non consentito"}), 405
+        
+
+        
+
+
+5
+
+     
 
 # Funzione per la registrazione dell'utente
 @server.route('/register/', methods=['GET', 'POST'])
@@ -67,9 +93,10 @@ def register_user():
         codice_di_recupero = data.get('codice_di_recupero')
 
         # codifico la password in codice hash
+
         
 
-        # Esegui la query SQL per inserire l'utente nel database
+        # Esegui la query SQL per inserire l'utente nel database (aggiugnere gestione errori)
         query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password}', '{periodo_storico}', '{codice_di_recupero}')"
         executeQuery(query)
 
@@ -82,16 +109,12 @@ def register_user():
 def logout():
     return "<h1> logout fatto </h1>"
 
-# per visualizzare il profilo dell'utente
-@server.route('/profile/my/')
-def profile():
-    return "<h1> profile </h1>"
 
 # per visualizzare il profilo di un utente
-@server.route('/profile/<int:user_id>', methods=['GET'])
+@server.route('/profile/<int:user_id>/', methods=['GET'])
 def profile(user_id):
     if request.method == 'GET':
-        # Query per recuperare informazioni sul profilo dell'utente
+        # Query per recuperare informazioni sul profilo dell'utente (aggiugnere gestione errori)
         profile_query = f"""
             SELECT Profilo.*, 
                 COUNT(Post.IDPost) AS NumPost,
@@ -117,10 +140,10 @@ def profile(user_id):
         return jsonify({"message": "Metodo non consentito"}), 405
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
-@server.route('/trending', methods=['GET'])
+@server.route('/trending/', methods=['GET'])
 def trending():
     if request.method == 'GET':
-        # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni)
+        # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni) (aggiugnere gestione errori)
         query = """
             SELECT Post.*, 
                 COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
