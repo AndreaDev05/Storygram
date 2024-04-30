@@ -66,6 +66,9 @@ def register_user():
         periodo_storico = data.get('periodo_storico')
         codice_di_recupero = data.get('codice_di_recupero')
 
+        # codifico la password in codice hash
+        
+
         # Esegui la query SQL per inserire l'utente nel database
         query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password}', '{periodo_storico}', '{codice_di_recupero}')"
         executeQuery(query)

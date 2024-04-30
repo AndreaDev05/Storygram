@@ -9,4 +9,5 @@ Componenti del team di sviluppo:
     <li> Gambardella Giovanni Antonio </li>
     <li> Matteazzi Andrea </li>
     <li> Toso Elia </li>
+    Per domande o segnalazioni: [info@storygram.it](mailto:info@storygram.it)
 </ul>
