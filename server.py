@@ -65,19 +65,19 @@ def login():
         query = f"SELECT * FROM Utenti WHERE CodiceUtente = {codiceUtente} AND Password = {password_hash} LIMIT 1"
         executeQuery(query)
 
-        return jsonify({"message": "Utente Loggato con successo"}), 200
-    
+        # Se l'utente esiste, la sessione viene avviata
+        if len(executeQuery(query)) == 1:
+            session['logged_in'] = True
+            session['codiceUtente'] = codiceUtente
+            return jsonify({"message": "Utente Loggato con successo"}), 200
+        else:
+            return jsonify({"message": "Utente non trovato"}), 404
 
     else:
         return jsonify({"message": "Metodo non consentito"}), 405
         
 
-        
-
-
-5
-
-     
+    
 
 # Funzione per la registrazione dell'utente
 @server.route('/register/', methods=['GET', 'POST'])
@@ -93,12 +93,15 @@ def register_user():
         codice_di_recupero = data.get('codice_di_recupero')
 
         # codifico la password in codice hash
-
-        
+        password_hash = hashlib.sha256(password)
+        print(password_hash)
 
         # Esegui la query SQL per inserire l'utente nel database (aggiugnere gestione errori)
-        query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password}', '{periodo_storico}', '{codice_di_recupero}')"
+        query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password_hash}', '{periodo_storico}', '{codice_di_recupero}')"
         executeQuery(query)
+
+        # redirect alla pagina di login
+        # redirect(url_for('login')) 
 
         return jsonify({"message": "Utente registrato con successo"}), 200
     else:
@@ -107,60 +110,77 @@ def register_user():
 # per effettuare il logout
 @server.route('/logout/', methods=["POST"])
 def logout():
-    return "<h1> logout fatto </h1>"
+    if session['logged_in'] == True:
+        if request.method == "POST":
+            # elimino i dati di sessione 
+            session.pop('logged_in', None)
+            session.pop('codiceUtente', None)
+            # reindirizzo alla pagina principale
+            return redirect(url_for('index')) # url da definire 
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return jsonify({"message": "Utente non loggato"}), 404
 
 
 # per visualizzare il profilo di un utente
 @server.route('/profile/<int:user_id>/', methods=['GET'])
 def profile(user_id):
-    if request.method == 'GET':
-        # Query per recuperare informazioni sul profilo dell'utente (aggiugnere gestione errori)
-        profile_query = f"""
-            SELECT Profilo.*, 
-                COUNT(Post.IDPost) AS NumPost,
-                COUNT(Followers.IDUtenteSeguace) AS NumFollowers,
-                COUNT(Following.IDUtenteSeguito) AS NumFollowing
-            FROM Profilo
-            LEFT JOIN Post ON Profilo.IDProfilo = Post.IDProfiloProvenienza
-            LEFT JOIN Followers ON Profilo.IDProfilo = Followers.IDUtenteSeguito
-            LEFT JOIN Following ON Profilo.IDProfilo = Following.IDUtenteSeguace
-            WHERE Profilo.IDProfilo = {user_id}
-        """
-        profile_info = executeQuery(profile_query)
+    if session['logged_in'] == True:
+        if request.method == 'GET':
+            # Query per recuperare informazioni sul profilo dell'utente (aggiugnere gestione errori)
+            profile_query = f"""
+                SELECT Profilo.*, 
+                    COUNT(Post.IDPost) AS NumPost,
+                    COUNT(Followers.IDUtenteSeguace) AS NumFollowers,
+                    COUNT(Following.IDUtenteSeguito) AS NumFollowing
+                FROM Profilo
+                LEFT JOIN Post ON Profilo.IDProfilo = Post.IDProfiloProvenienza
+                LEFT JOIN Followers ON Profilo.IDProfilo = Followers.IDUtenteSeguito
+                LEFT JOIN Following ON Profilo.IDProfilo = Following.IDUtenteSeguace
+                WHERE Profilo.IDProfilo = {user_id}
+            """
+            profile_info = executeQuery(profile_query)
 
-        # Query per recuperare i post dell'utente
-        posts_query = f"""
-            SELECT * FROM Post
-            WHERE IDProfiloProvenienza = {user_id}
-        """
-        user_posts = executeQuery(posts_query)
+            # Query per recuperare i post dell'utente
+            posts_query = f"""
+                SELECT * FROM Post
+                WHERE IDProfiloProvenienza = {user_id}
+            """
+            user_posts = executeQuery(posts_query)
 
-        return render_template('profile.html', profile_info=profile_info[0], user_posts=user_posts) # !! nome pagina poi da definire !!
+            return render_template('profile.html', profile_info=profile_info[0], user_posts=user_posts) # !! nome pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+            return jsonify({"message": "Utente non loggato"}), 404
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
 @server.route('/trending/', methods=['GET'])
 def trending():
-    if request.method == 'GET':
-        # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni) (aggiugnere gestione errori)
-        query = """
-            SELECT Post.*, 
-                COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
-                COUNT(Commento.IDPostDestinazione) AS NumCommenti
-            FROM Post
-            LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
-            LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
-            WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-            GROUP BY Post.IDPost
-            ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
-        """
-        trending_posts = executeQuery(query) 
+    if session['logged_in'] == True:
+        if request.method == 'GET':
+            # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni) (aggiugnere gestione errori)
+            query = """
+                SELECT Post.*, 
+                    COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+                    COUNT(Commento.IDPostDestinazione) AS NumCommenti
+                FROM Post
+                LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+                LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+                WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                GROUP BY Post.IDPost
+                ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
+            """
+            trending_posts = executeQuery(query) 
 
-        # !! nome pagina poi da definire !!
-        return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+            # !! nome pagina poi da definire !!
+            return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+        return jsonify({"message": "Utente non loggato"}), 401
+    
 
 # per visualizzare un post 
 @server.route('/post/<int:id>/')
@@ -170,26 +190,28 @@ def post_id(id):
 # funzione per visualizzare i commenti di un post o inserire un nuovo commento
 @server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
 def post_comment(post_id):
-    if request.method == 'GET':
-        query = f"SELECT * FROM Commento WHERE IDPost = '{post_id}'" # recupero i commenti del post relativo all'id
-        comments = executeQuery(query, fetchall=True)
+    if session['logged_in'] == True:
+        if request.method == 'GET':
+            query = f"SELECT * FROM Commento WHERE IDPost = '{post_id}'" # recupero i commenti del post relativo all'id
+            comments = executeQuery(query, fetchall=True)
 
-        return render_template('comments.html', comments=comments) # redirect alla pagina dei commenti
+            return render_template('comments.html', comments=comments) # redirect alla pagina dei commenti
 
-    elif request.method == 'POST':
-        # Recupera i dati inviati dal form
-        data = request.json
-        comment_text = data.get('comment_text')
-        profile_id = data.get('profile_id')
+        elif request.method == 'POST':
+            # Recupera i dati inviati dal form
+            data = request.json
+            comment_text = data.get('comment_text')
 
-        # inserisco i dati del commento nel database
-        query = f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPost) VALUES ('{comment_text}', NOW(), '{profile_id}', '{post_id}')"
-        executeQuery(query)
+            # inserisco i dati del commento nel database
+            query = f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPost) VALUES ('{comment_text}', NOW(), '{session['user_id']}', '{post_id}')"
+            executeQuery(query)
 
-        # aggiorno la pagina dei commenti
-        return redirect(url_for('comments', post_id=post_id)) # !! nome pagina poi da definire !!
+            # aggiorno la pagina dei commenti
+            return redirect(url_for('comments', post_id=post_id)) # !! nome pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+        return jsonify({"message": "Utente non loggato"}), 401
 
 
 # per visualizzare o mettere un  like di un post
@@ -209,24 +231,27 @@ def post_id_comment_id_delete(id, comment_id):
 
 @server.route('/create_post', methods=['GET', 'POST'])
 def create_post():
-    if request.method == 'POST':
-        # prendo i dati del form
-        descrizione = request.form['descrizione']
-        percorso_file = request.form['percorso_file']
-        id_profilo_provenienza = request.form['id_profilo_provenienza']
+    if session['logged_in'] == True:
+        if request.method == 'POST':
+            # prendo i dati del form
+            descrizione = request.form['descrizione']
+            percorso_file = request.form['percorso_file']
 
-        # inserisco le informazioni del nuovo post nel db
-        query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', '{id_profilo_provenienza}')"
-        executeQuery(query)
+            # inserisco le informazioni del nuovo post nel db
+            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', '{session['user_id']}')"
+            executeQuery(query)
 
-        # aggiorno lapplicaizone e rindirizzo alla pagina principale 
-        return redirect(url_for('index')) # !! nome pagina poi da definire !!
-    
-    elif request.method == 'GET':
-        # carico la pagina per la creazione di un nuovo post 
-        return render_template('create_post.html') # !! nome pagina poi da definire !!
+            # aggiorno lapplicaizone e rindirizzo alla pagina principale 
+            return redirect(url_for('index')) # !! nome pagina poi da definire !!
+        
+        elif request.method == 'GET':
+            # carico la pagina per la creazione di un nuovo post 
+            return render_template('create_post.html') # !! nome pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+        return jsonify({"message": "Utente non loggato"}), 405
+
 
 # menu impostazioni
 @server.route('/settings/')
@@ -239,3 +264,4 @@ def settings():
 if __name__ == "__main__":
     # avviamo l'applicazione in modalità debug
     server.run(debug=True)
+
