@@ -24,22 +24,25 @@ server.secret_key = credentials.chiave_segreta
 # --------------------------------------------------
 # funzione per eseguire una query su database
 def executeQuery(query):
-    connection = pymysql.connect(host=credentials.host,
-                             user=credentials.user,
-                             password=credentials.password,
-                             db=credentials.database,
-                             cursorclass=pymysql.cursors.DictCursor)
-
+    #   creo una connessione al database
+    connection = pymysql.connect(
+        host=credentials.host,
+        user=credentials.user,
+        password=credentials.password,
+        db=credentials.database,
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
     try:
         with connection:
             with connection.cursor() as cursor:
-                cursor.execute(query)
-                res = cursor.fetchall()
+                cursor.execute(query) # esegue la query
+                connection.commit() # permette di salvare le modifiche fatte al database
+                res = cursor.fetchall() # restituisce i risultati della query eseguita
                 return res
-    except Exception as e:
+    except Exception as e: # se avviene un errore ritorno -1 come codice di errore
         print(e)
-        return None
+        return -1
 
 
  
@@ -73,23 +76,23 @@ def login():
         risp = executeQuery(query)
         print(risp)
 
-        # Se l'utente esiste, la sessione viene avviata
+        # Se l'utente esiste e la password è corretta, la sessione viene avviata
         if risp:
             session['logged_in'] = True
             session['codiceUtente'] = risp[0]['CodiceUtente']
 
             return jsonify({"message": "Utente Loggato con successo"}), 200
-        else:
+        else:                                                           # Se l'utente non esiste o la password è errata
             return jsonify({"message": "Utente non trovato"}), 404
 
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+        return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
         
 # Funzione per la registrazione dell'utente
 @server.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        return render_template('registration.html') # redirect alla pagina di registrazione
+        return render_template('registration.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         codice_utente = request.form['CodiceUtente']
@@ -97,20 +100,21 @@ def register():
         periodo_storico = request.form['PeriodoStorico']
         codice_di_recupero = request.form['CodiceDiRecupero']
 
-        # codifico la password in codice hash
-        password_hash = hashlib.sha256(password).hexdigest()
-        print(password_hash)
+        # Codifica la password in codice hash
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
 
-        # Esegui la query SQL per inserire l'utente nel database (aggiugnere gestione errori)
+        # Esegui la query SQL per inserire l'utente nel database (aggiungi gestione errori)
         query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ({codice_utente}, '{password_hash}', '{periodo_storico}', {codice_di_recupero})"
-        executeQuery(query)
-
-        # redirect alla pagina di login
-        # redirect(url_for('login')) 
-
-        return jsonify({"message": "Utente registrato con successo"}), 200
+        res = executeQuery(query)
+        
+        # Se l'utente è gia registrato do errore
+        if res==-1:
+            return jsonify({"message": "Utente già registrato"}), 409
+        else:
+            return jsonify({"message": "Utente registrato con successo"}), 200 
+        
     else:
-        return jsonify({"message": "Metodo non consentito"}), 405
+        return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore 
     
 # per effettuare il logout
 @server.route('/logout/', methods=["POST"])
@@ -268,5 +272,5 @@ def settings():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=False, port=11125)
+    server.run(host='0.0.0.0',debug=True, port=11125)
 
