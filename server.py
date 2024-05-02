@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request, render_template, url_for, redirect, session   # usato per flask
-from datetime import timedelta                                                  # usato nel tempo per la sessione
+from datetime import timedelta
+import pymysql                                                  # usato nel tempo per la sessione
 import credentials                                                              # usato per importare credenziali utili
-import pymysql.cursors
-import hashlib                                                                   # usato per la conversione della password in hash mediante l'algoritmo sha-256
+import hashlib                                                                  # usato per la conversione della password in hash mediante l'algoritmo sha-256
+
 
 server = Flask(__name__)
 
@@ -40,8 +41,10 @@ def executeQuery(query):
 # --------------------------------------------------
 
 
+
 # ---------- sezione delle route -----------
 
+#route di home storygram !!!!
 @server.route('/')
 def home():
     return render_template("about_storygram.html", title = "About storygram") # !! nome pagina poi da definire !!
@@ -54,21 +57,20 @@ def login():
     if request.method == "POST":
         # Recupera i dati inviati dal form
         codiceUtente = request.form['codiceUtente']
-        password = request.form['passwo']
+        password = request.form['password']
 
         # converto la passowrd inserita in hash 
-        password_hash = hashlib.sha256(password)
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
         print(password_hash)
-
 
         # Esegui la query per verificare se l'utente esiste (aggiugnere gestione errori)
         query = f"SELECT * FROM Utenti WHERE CodiceUtente = {codiceUtente} AND Password = {password_hash} LIMIT 1"
-        executeQuery(query)
+        risp = executeQuery(query)
 
         # Se l'utente esiste, la sessione viene avviata
-        if len(executeQuery(query)) == 1:
+        if len(risp) == 1:
             session['logged_in'] = True
-            session['codiceUtente'] = codiceUtente
+            session['codiceUtente'] = risp[1]
             return jsonify({"message": "Utente Loggato con successo"}), 200
         else:
             return jsonify({"message": "Utente non trovato"}), 404
@@ -93,12 +95,12 @@ def register_user():
         codice_di_recupero = data.get('codice_di_recupero')
 
         # codifico la password in codice hash
-        password_hash = hashlib.sha256(password)
+        password_hash = hashlib.sha256(password).hexdigest()
         print(password_hash)
 
         # Esegui la query SQL per inserire l'utente nel database (aggiugnere gestione errori)
         query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password_hash}', '{periodo_storico}', '{codice_di_recupero}')"
-        executeQuery(query)
+        #executeQuery(query)
 
         # redirect alla pagina di login
         # redirect(url_for('login')) 
@@ -113,8 +115,7 @@ def logout():
     if session['logged_in'] == True:
         if request.method == "POST":
             # elimino i dati di sessione 
-            session.pop('logged_in', None)
-            session.pop('codiceUtente', None)
+            session.clear()
             # reindirizzo alla pagina principale
             return redirect(url_for('index')) # url da definire 
         else:
@@ -229,7 +230,7 @@ def post_id_unlike(id):
 def post_id_comment_id_delete(id, comment_id):
     return f"<h1> post {id} comment {comment_id} delete </h1>"
 
-@server.route('/create_post', methods=['GET', 'POST'])
+@server.route('/create_post/', methods=['GET', 'POST'])
 def create_post():
     if session['logged_in'] == True:
         if request.method == 'POST':
@@ -262,6 +263,7 @@ def settings():
 #  -------- sezione di avvio server --------
 
 if __name__ == "__main__":
+
     # avviamo l'applicazione in modalità debug
     server.run(debug=True)
 
