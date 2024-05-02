@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template, url_for, redirect, session   # usato per flask
 from datetime import timedelta
-import pymysql                                                  # usato nel tempo per la sessione
+import pymysql                                                                  # usato nel tempo per la sessione
 import credentials                                                              # usato per importare credenziali utili
 import hashlib                                                                  # usato per la conversione della password in hash mediante l'algoritmo sha-256
 
@@ -11,7 +11,7 @@ server = Flask(__name__)
 #   con questo comando noi impostiamo la modalità del server in modalità
 #   di debug avendo quindi il vantaggio che non servirà ricaricare le varie
 #   pagine del browser per visualizzare i cambiamenti nel codice
-server.config["DEBUG"] = True
+server.config["DEBUG"] = False
 
 #   con questo comando impostiamo la durata di ogni sessione per 5 minuti
 #   (al termine di quest'ultimi la sessione verrà chiusa automaticamente)
@@ -24,11 +24,12 @@ server.secret_key = credentials.chiave_segreta
 # --------------------------------------------------
 # funzione per eseguire una query su database
 def executeQuery(query):
-    connection = pymysql.connect(credentials.host,
-                                credentials.user,
-                                credentials.password,
-                                credentials.database,
-                                cursorclass=pymysql.cursors.DictCursor)
+    connection = pymysql.connect(host=credentials.host,
+                             user=credentials.user,
+                             password=credentials.password,
+                             db=credentials.database,
+                             cursorclass=pymysql.cursors.DictCursor)
+
 
     try:
         with connection:
@@ -265,5 +266,5 @@ def settings():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(debug=True)
+    server.run(host='0.0.0.0',debug=False, port=10000)
 
