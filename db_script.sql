@@ -1,7 +1,3 @@
--- variabile globale che indica il percorso file per l'immagine profilo di default
-DECLARE @PathImmagineProfilo varchar(100);
-SET @PathImmagineProfilo = 'PATH DA DEFINIRE';
-
 CREATE TABLE Utente (
     IDUtente int PRIMARY KEY AUTO_INCREMENT,
     CodiceUtente int NOT NULL UNIQUE,
@@ -16,7 +12,7 @@ CREATE TABLE Profilo (
     Cognome varchar(25) NOT NULL,
     Descrizione text(200) NOT NULL DEFAULT "",
     NumeroDiPost int NOT NULL DEFAULT 0,
-    PathImmagineProfilo varchar(100) NOT NULL DEFAULT @PathImmagineProfilo,
+    PathImmagineProfilo varchar(100) NOT NULL DEFAULT "PATH DA DEFINIRE",
     Seguaci int NOT NULL DEFAULT 0,
     Seguiti int NOT NULL DEFAULT 0,
     Privacy BIT(1) NOT NULL DEFAULT 0, -- 0 PROFILO PUBBLICO, 1 PROFILO PRIVATO --> i computer sono più veloci coi numeri che con le stringhe
