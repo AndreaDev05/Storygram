@@ -1,7 +1,7 @@
 CREATE TABLE Utente (
     IDUtente int PRIMARY KEY AUTO_INCREMENT,
     CodiceUtente int NOT NULL UNIQUE,
-    Password varchar(30) NOT NULL,
+    Password varchar(200) NOT NULL,
     PeriodoStorico varchar(10) NOT NULL,
     CodiceDiRecupero int NOT NULL
     );
