@@ -11,7 +11,7 @@ server = Flask(__name__)
 #   con questo comando noi impostiamo la modalità del server in modalità
 #   di debug avendo quindi il vantaggio che non servirà ricaricare le varie
 #   pagine del browser per visualizzare i cambiamenti nel codice
-server.config["DEBUG"] = False
+server.config["DEBUG"] = True
 
 #   con questo comando impostiamo la durata di ogni sessione per 5 minuti
 #   (al termine di quest'ultimi la sessione verrà chiusa automaticamente)
@@ -37,8 +37,12 @@ def executeQuery(query):
                 cursor.execute(query)
                 res = cursor.fetchall()
                 return res
-    finally:
-        connection.close()
+    except Exception as e:
+        print(e)
+        return None
+
+
+ 
 # --------------------------------------------------
 
 
@@ -62,16 +66,18 @@ def login():
 
         # converto la passowrd inserita in hash 
         password_hash = hashlib.sha256(password.encode()).hexdigest()
-        print(password_hash)
+        #print(password_hash)
 
         # Esegui la query per verificare se l'utente esiste (aggiugnere gestione errori)
-        query = f"SELECT * FROM Utenti WHERE CodiceUtente = {codiceUtente} AND Password = {password_hash} LIMIT 1"
+        query = f"SELECT * FROM Utente WHERE CodiceUtente = {codiceUtente} AND Password = '{password_hash}' LIMIT 1"
         risp = executeQuery(query)
+        print(risp)
 
         # Se l'utente esiste, la sessione viene avviata
-        if len(risp) == 1:
+        if risp:
             session['logged_in'] = True
-            session['codiceUtente'] = risp[1]
+            session['codiceUtente'] = risp[0]['CodiceUtente']
+
             return jsonify({"message": "Utente Loggato con successo"}), 200
         else:
             return jsonify({"message": "Utente non trovato"}), 404
@@ -79,9 +85,6 @@ def login():
     else:
         return jsonify({"message": "Metodo non consentito"}), 405
         
-
-    
-
 # Funzione per la registrazione dell'utente
 @server.route('/register/', methods=['GET', 'POST'])
 def register_user():
@@ -89,19 +92,18 @@ def register_user():
         return render_template('registration_form.html') # redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
-        data = request.json
-        codice_utente = data.get('codice_utente')
-        password = data.get('password')
-        periodo_storico = data.get('periodo_storico')
-        codice_di_recupero = data.get('codice_di_recupero')
+        codice_utente = request.form('CodiceUtente')
+        password = request.form('Password')
+        periodo_storico = request.form('PeriodoStorico')
+        codice_di_recupero = request.form('CodiceDiRecupero')
 
         # codifico la password in codice hash
         password_hash = hashlib.sha256(password).hexdigest()
         print(password_hash)
 
         # Esegui la query SQL per inserire l'utente nel database (aggiugnere gestione errori)
-        query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{codice_utente}', '{password_hash}', '{periodo_storico}', '{codice_di_recupero}')"
-        #executeQuery(query)
+        query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ({codice_utente}, '{password_hash}', '{periodo_storico}', {codice_di_recupero})"
+        executeQuery(query)
 
         # redirect alla pagina di login
         # redirect(url_for('login')) 
@@ -266,5 +268,5 @@ def settings():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=False, port=10000)
+    server.run(host='0.0.0.0',debug=False, port=11125)
 
