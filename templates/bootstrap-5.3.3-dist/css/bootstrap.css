@@ -2972,6 +2972,10 @@ textarea.form-control-lg {
   z-index: 4;
 }
 
+.text-sidebar{
+  font-size: 24px;
+}
+
 .btn-sidebar{
   width:19.2vw;
   background: transparent;
