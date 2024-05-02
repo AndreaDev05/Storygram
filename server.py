@@ -87,15 +87,15 @@ def login():
         
 # Funzione per la registrazione dell'utente
 @server.route('/register/', methods=['GET', 'POST'])
-def register_user():
+def register():
     if request.method == 'GET':
-        return render_template('registration_form.html') # redirect alla pagina di registrazione
+        return render_template('registration.html') # redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
-        codice_utente = request.form('CodiceUtente')
-        password = request.form('Password')
-        periodo_storico = request.form('PeriodoStorico')
-        codice_di_recupero = request.form('CodiceDiRecupero')
+        codice_utente = request.form['CodiceUtente']
+        password = request.form['Password']
+        periodo_storico = request.form['PeriodoStorico']
+        codice_di_recupero = request.form['CodiceDiRecupero']
 
         # codifico la password in codice hash
         password_hash = hashlib.sha256(password).hexdigest()
