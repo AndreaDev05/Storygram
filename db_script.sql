@@ -1,5 +1,6 @@
 -- variabile globale che indica il percorso file per l'immagine profilo di default
-DECLARE @PathImmagineProfilo varchar(100) = "PATH DA DEFINIRE"
+DECLARE @PathImmagineProfilo varchar(100);
+SET @PathImmagineProfilo = 'PATH DA DEFINIRE';
 
 CREATE TABLE Utente (
     IDUtente int PRIMARY KEY AUTO_INCREMENT,
