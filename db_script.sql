@@ -65,7 +65,7 @@ CREATE TABLE Commento (
     CONSTRAINT FK_CommentoPostDestinazione FOREIGN KEY (IDPostDestinazione) REFERENCES Post(IDPost) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
-CREATE TABLE Storia
+CREATE TABLE Storia (
     IDStoria int PRIMARY KEY AUTO_INCREMENT,
     PercorsoFile varchar(100) NOT NULL,
     IDProfiloProvenienza int NOT NULL,
