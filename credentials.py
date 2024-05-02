@@ -4,7 +4,8 @@
 chiave_segreta = "63YUYAbo2xllzmOXQ36GwjTVmmS6URNt"
 
 #   parametri di connessione al database
-host = 'localhost'
-user = 'storygram'
-password = 'storygram'
-database = 'storygram'
+host = '88.36.232.42'
+user = 's02797'
+password = ''
+database = 's02797'
+port = 3306
