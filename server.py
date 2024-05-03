@@ -25,10 +25,6 @@ server.permanent_session_lifetime = timedelta(minutes=5)
 #   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
 server.secret_key = credentials.chiave_segreta
  
-# --------------------------------------------------
-
-
-
 # ---------- sezione delle route -----------
 
 #route di home storygram !!!!
@@ -223,7 +219,7 @@ def trending():
             trending_posts = executeQuery(query) 
 
             # !! nome pagina poi da definire !!
-            return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+            return jsonify({"message": "pagina trending"},trending_posts), 200 # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
