@@ -4,7 +4,7 @@ import pymysql                                                                  
 import credentials                                                              # usato per importare credenziali utili
 import hashlib     
 from scriptCartelleUtenti  import creaCartella                                                         # usato per la conversione della password in hash mediante l'algoritmo sha-256
-
+from db_control import executeQuery
 
 server = Flask(__name__)
 
@@ -21,31 +21,6 @@ server.permanent_session_lifetime = timedelta(minutes=5)
 #   valore ripreso da un file esterno
 #   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
 server.secret_key = credentials.chiave_segreta
-
-# --------------------------------------------------
-# funzione per eseguire una query su database
-def executeQuery(query):
-    #   creo una connessione al database
-    connection = pymysql.connect(
-        host=credentials.host,
-        user=credentials.user,
-        password=credentials.password,
-        db=credentials.database,
-        cursorclass=pymysql.cursors.DictCursor
-    )
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query) # esegue la query
-                connection.commit() # permette di salvare le modifiche fatte al database
-                res = cursor.fetchall() # restituisce i risultati della query eseguita
-                return res
-    except Exception as e: # se avviene un errore ritorno -1 come codice di errore
-        print(e)
-        return -1
-
-
  
 # --------------------------------------------------
 
@@ -136,13 +111,11 @@ def logout():
 # ---------------- route per la creazione di un nuovo post ---------------------- #
 @server.route('/post/create/', methods=['GET', 'POST'])
 def create_post():
-    if True == True: # if session['logged_in'] == True:
+    if session['logged_in'] == True:
         if request.method == 'POST':
             # prendo i dati del form
             descrizione = request.form['descrizione']
             percorso_file = request.form['percorso_file']
-            
-            session['codiceUtente'] = -1 # debug
 
             # inserisco le informazioni del nuovo post nel db
             query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', {session['codiceUtente']})"
@@ -166,8 +139,6 @@ def profile():
     if session.get('logged_in') == True:
         if request.method == 'GET':
 
-            user_id = session['codiceUtente']
-
             # Query per recuperare informazioni sul profilo dell'utente
             profile_query = f"""
                                 SELECT 
@@ -179,7 +150,7 @@ def profile():
                                 FROM 
                                     Profilo
                                 WHERE 
-                                    IDProfilo = {user_id};
+                                    IDProfilo = {session['codiceUtente']};
                             """
             profile_info = executeQuery(profile_query)
             
@@ -193,7 +164,7 @@ def profile():
             # se il profilo è pubblico recupero anche le informazioni dei suoi post
             posts_query = f"""
                 SELECT * FROM Post
-                WHERE IDProfiloProvenienza = {user_id}
+                WHERE IDProfiloProvenienza = {session['codiceUtente']}
             """
             user_posts = executeQuery(posts_query)
 
@@ -201,6 +172,33 @@ def profile():
             return jsonify({"message": "Profilo torvato e pubblico"}), 200 # !!  pagina poi da definire !!
         
         return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return jsonify({"message": "Utente non loggato"}), 401
+    
+# ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
+@server.route('/settings/', methods=['GET', 'POST'])
+def settings():
+    if session['logged_in'] == True:
+        if request.method == 'GET':
+            # carico la pagina per la modifica delle impostazioni del profilo
+            return jsonify({"message": "pagina impostazioni"}), 200 # !!  pagina poi da definire !!
+        elif request.method == 'POST':
+            # Prende i dati dal form
+            pathImmagineProfilo = request.form.get('pathImmagineProfilo')
+            descrizione = request.form.get('descrizione')
+            privacy = request.form.get('privacy')
+            
+            session['codiceUtente'] = -1 # debug
+
+            # Query per aggiornare le informazioni sul profilo dell'utente
+            query = f"UPDATE Profilo SET PathImmagineProfilo = '{pathImmagineProfilo}', Descrizione = '{descrizione}', Privacy = '{privacy}' WHERE IDProfilo = {session['codiceUtente']};"
+            
+            # Esegui l'aggiornamento nel database
+            executeQuery(query)
+            return jsonify({"message": "Impostazioni aggiornate"}), 200 # !!  pagina poi da definire !!
+
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
 
@@ -230,12 +228,6 @@ def trending():
     else:
         return jsonify({"message": "Utente non loggato"}), 401
     
-
-# per visualizzare un post 
-@server.route('/post/<int:id>/')
-def post_id(id):
-    return f"<h1> post {id} </h1>"
-
 # funzione per visualizzare i commenti di un post o inserire un nuovo commento
 @server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
 def post_comment(post_id):
@@ -260,28 +252,9 @@ def post_comment(post_id):
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return jsonify({"message": "Utente non loggato"}), 401"
 
 
-# per visualizzare o mettere un  like di un post
-@server.route('/post/<int:id>/like/')
-def post_id_like(id):
-    return f"<h1> post {id} like </h1>"
-
-# per unlike di un post
-@server.route('/post/<int:id>/unlike/')
-def post_id_unlike(id):
-    return f"<h1> post {id} unlike </h1>"
-
-# per eelimianre un commento
-@server.route('/post/<int:id>/comment/<int:comment_id>/delete/')
-def post_id_comment_id_delete(id, comment_id):
-    return f"<h1> post {id} comment {comment_id} delete </h1>"
-
-# menu impostazioni
-@server.route('/settings/')
-def settings():
-    return "<h1> settings </h1>"
 
 
 #  -------- sezione di avvio server --------
