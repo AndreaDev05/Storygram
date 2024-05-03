@@ -1,28 +1,53 @@
 <!-- LAYOUT PRINCIPALE DOVE VERRANO ESTESI TUTTI GLI ALTRI HTML -->
 
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bs-theme="light">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
         <title> STORYGRAM </title>
     </head>
-    <body>
-        <div class="row vh-100">
-            <div class="col w-sidebars">
-                <button type="button" class="btn btn-sidebar" role="button">
-                    
-                    <img src="./icons/home_icon_dark.svg" alt="img_home">
-                    <span class="text-sidebar">Home</span>
-                </button>
-            </div>
-            <div class="col-7">
-            </div>
-            <div class="col w-sidebars">
+    <body class="bg-success">
+        <div class="row vh-100 d-flex flex-row-reverse">
+            <div class="col main-col stories">
                 ciao
             </div>
+            <div class="col-7 main-col content">
+            </div>
+            <div class="col w-sidebars mt-sm-6 main-col sidebar">
+                <button type="button" class="btn btn-sidebar" role="button">
+                    <span class="icon-sidebar">
+                        <img src="./icons/home_icon_dark.svg" alt="img_home">
+                    </span>
+                    <span class="text-sidebar">Home</span>
+                </button>
+                <button type="button" class="btn btn-sidebar" role="button">
+                    <span class="icon-sidebar">
+                        <img src="./icons/search_icon_dark.svg" alt="img_home">
+                    </span>
+                    <span class="text-sidebar">Cerca</span>
+                </button>
+                <button type="button" class="btn btn-sidebar" role="button">
+                    <span class="icon-sidebar">
+                        <img src="./icons/add_icon_dark.svg" alt="img_home">
+                    </span>
+                    <span class="text-sidebar">Crea</span>
+                </button>
+                <button type="button" class="btn btn-sidebar" role="button">
+                    <span class="icon-sidebar">
+                        <img src="./icons/message_icon_dark.svg" alt="img_home">
+                    </span>
+                    <span class="text-sidebar">Messaggi</span>
+                </button>
+                <button type="button" class="btn btn-sidebar" role="button">
+                    <span class="icon-sidebar">
+                        <img src="./icons/user_icon_dark.svg" alt="img_home">
+                    </span>
+                    <span class="text-sidebar">Profilo</span>
+                </button>
+            </div>
         </div>
-
+        <script src="bootstrap.js"></script>
     </body>
 </html>
