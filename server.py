@@ -1,10 +1,13 @@
+
+# problema route setting: nella query se viene modificata la privacy il db da sempre errore di dato troppo lungo
+# problema dell'attributo nel db????
+
 from flask import Flask, jsonify, request, render_template, url_for, redirect, session   # usato per flask
-from datetime import timedelta
-import pymysql                                                                  # usato nel tempo per la sessione
-import credentials                                                              # usato per importare credenziali utili
-import hashlib     
-from scriptCartelleUtenti  import creaCartella                                                         # usato per la conversione della password in hash mediante l'algoritmo sha-256
-from db_control import executeQuery
+from datetime import timedelta # usato per impostare la durata di una sessione
+import credentials # usato per importare credenziali utili
+import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
+from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
+from db_control import executeQuery # usato per la comunicazione con il db
 
 server = Flask(__name__)
 
@@ -22,16 +25,12 @@ server.permanent_session_lifetime = timedelta(minutes=5)
 #   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
 server.secret_key = credentials.chiave_segreta
  
-# --------------------------------------------------
-
-
-
 # ---------- sezione delle route -----------
 
 #route di home storygram !!!!
 @server.route('/')
 def home():
-    return render_template("about_storygram.html", title = "About storygram") # !! nome pagina poi da definire !!
+    return render_template("about_storygram.html", title = "About storygram") # !!  pagina poi da definire !!
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
@@ -58,8 +57,8 @@ def login():
             session['codiceUtente'] = risp[0]['CodiceUtente']
 
             return jsonify({"message": "Utente Loggato con successo"}), 200
-        else:                                                           # Se l'utente non esiste o la password è errata
-            return jsonify({"message": "Utente non trovato"}), 404
+        else:                                                           
+            return jsonify({"message": "Utente o Password errata"}), 404  # Se l'utente non esiste o la password è errata
 
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
@@ -89,7 +88,7 @@ def register():
         else:
             # creo la cartella dove memorizzare i vari futuri media del nuovo utente
             creaCartella(codice_utente)
-            return jsonify({"message": "Utente registrato con successo"}), 200 
+            return jsonify({"message": "Utente registrato con successo"}), 200  # !!  pagina poi da definire !!
         
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore 
@@ -187,8 +186,6 @@ def settings():
             pathImmagineProfilo = request.form.get('pathImmagineProfilo')
             descrizione = request.form.get('descrizione')
             privacy = request.form.get('privacy')
-            
-            session['codiceUtente'] = -1 # debug
 
             # Query per aggiornare le informazioni sul profilo dell'utente
             query = f"UPDATE Profilo SET PathImmagineProfilo = '{pathImmagineProfilo}', Descrizione = '{descrizione}', Privacy = '{privacy}' WHERE IDProfilo = {session['codiceUtente']};"
@@ -222,17 +219,21 @@ def trending():
             trending_posts = executeQuery(query) 
 
             # !! nome pagina poi da definire !!
-            return render_template('trending.html', trending_posts=trending_posts) # redirect alla pagina dei trending posts con i post in tendenza 
+            return jsonify({"message": "pagina trending"},trending_posts), 200 # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
     
-# funzione per visualizzare i commenti di un post o inserire un nuovo commento
-@server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
-def post_comment(post_id):
+# ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
+@server.route('/post/comments/', methods=['GET', 'POST'])
+def post_comment():
     if session['logged_in'] == True:
         if request.method == 'GET':
+
+            # Recupero l'id del post relativo al commento (da implementare)
+            post_id = -1 # debug
+
             query = f"SELECT * FROM Commento WHERE IDPost = '{post_id}'" # recupero i commenti del post relativo all'id
             comments = executeQuery(query, fetchall=True)
 
@@ -240,24 +241,51 @@ def post_comment(post_id):
 
         elif request.method == 'POST':
             # Recupera i dati inviati dal form
-            data = request.json
-            comment_text = data.get('comment_text')
+            Commento = request.form.get('Commento')
+            
+            # Recupero l'id del post relativo al commento (da implementare)
+            post_id = -1 # debug 
 
             # inserisco i dati del commento nel database
-            query = f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPost) VALUES ('{comment_text}', NOW(), '{session['user_id']}', '{post_id}')"
+            query = f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPostDestinazione) VALUES ('{Commento}', NOW(), {session['codiceUtente']}, {post_id})"
             executeQuery(query)
 
-            # aggiorno la pagina dei commenti
-            return redirect(url_for('comments', post_id=post_id)) # !! nome pagina poi da definire !!
+            return jsonify({"message": "Commento inserito"}), 200 # !!  pagina poi da definire !!
+            
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401"
+        return jsonify({"message": "Utente non loggato"}), 401
+    
+# ---------------- route per gestione messaggi ---------------------- #
+@server.route('/messages/', methods=['GET', 'POST'])
+def messages():
+    if session['logged_in'] == True:
+        if request.method == 'GET':
 
+            # Recupero l'id del profilo con cui è la chat (da implementare)
+            id_amico = -1 # debug
 
+            # Query per ottenere i messaggi ricevuti dal profilo loggato
+            query = f"SELECT * FROM Messaggio WHERE (IDProfiloDestinatario = {session['codiceUtente']} AND  IDProfiloMittente ={id_amico}) OR (IDProfiloDestinatario = {id_amico} AND IDProfiloMittente = {session['codiceUtente']}) ORDER BY Data DESC"
+            messages_received = executeQuery(query, fetchall=True)
+        elif request.method == 'POST':
 
+            # Recupera i dati inviati dal form
+            Messaggio = request.form.get('Messaggio')
 
-#  -------- sezione di avvio server --------
+            # Recupero l'id del profilo con cui è la chat (da implementare)
+            id_amico = -1 # debug
+
+            # inserisco i dati del messaggio nel database
+            query = f"INSERT INTO Messaggio (Messaggio, Data, IDProfiloMittente, IDProfiloDestinatario) VALUES ('{Messaggio}', NOW(), {session['codiceUtente']}, {id_amico})"
+            executeQuery(query)
+
+            return jsonify({"message": "Messaggio inserito"}), 200 # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+            return jsonify({"message": "Utente non loggato"}), 401
 
 if __name__ == "__main__":
 
