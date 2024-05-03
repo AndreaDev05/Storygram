@@ -49,7 +49,6 @@ def login():
         # Esegui la query per verificare se l'utente esiste (aggiugnere gestione errori)
         query = f"SELECT * FROM Utente WHERE CodiceUtente = {codiceUtente} AND Password = '{password_hash}' LIMIT 1"
         risp = executeQuery(query)
-        print(risp)
 
         # Se l'utente esiste e la password è corretta, la sessione viene avviata
         if risp:
