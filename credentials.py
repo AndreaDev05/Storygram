@@ -4,8 +4,8 @@
 chiave_segreta = "63YUYAbo2xllzmOXQ36GwjTVmmS6URNt"
 
 #   parametri di connessione al database
-host = 'contabile.e-fermi.it'
-user = ''
-password = ''
-database = ''
+host = 'localhost'
+user = 's02797'
+password = 'Bee5zo'
+database = 's02797'
 port = 3306

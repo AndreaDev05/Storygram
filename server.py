@@ -57,7 +57,7 @@ def executeQuery(query):
 def home():
     return render_template("about_storygram.html", title = "About storygram") # !! nome pagina poi da definire !!
 
-# si accettano solo i metodi HTTP GET e POST
+# ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -88,7 +88,7 @@ def login():
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
         
-# Funzione per la registrazione dell'utente
+# ---------------- route per la registrazione ---------------------- #
 @server.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
@@ -116,7 +116,7 @@ def register():
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore 
     
-# per effettuare il logout
+# ---------------- route per effettuare il logout ---------------------- #
 @server.route('/logout/', methods=["POST"])
 def logout():
     if session['logged_in'] == True:
@@ -124,44 +124,82 @@ def logout():
             # elimino i dati di sessione 
             session.clear()
             # reindirizzo alla pagina principale
-            return redirect(url_for('index')) # url da definire 
+            return jsonify({"message": "logout effettuato"}), 200 # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 404
+        return jsonify({"message": "Utente non loggato"}), 401
+
+# ---------------- route per la creazione di un nuovo post ---------------------- #
+@server.route('/post/create/', methods=['GET', 'POST'])
+def create_post():
+    if True == True: # if session['logged_in'] == True:
+        if request.method == 'POST':
+            # prendo i dati del form
+            descrizione = request.form['descrizione']
+            percorso_file = request.form['percorso_file']
+            
+            session['codiceUtente'] = -1 # debug
+
+            # inserisco le informazioni del nuovo post nel db
+            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', {session['codiceUtente']})"
+            executeQuery(query)
+
+            # aggiorno l'applicaizone e rindirizzo alla pagina principale 
+            return jsonify({"message": "post creato con successo"}), 200 # !!  pagina poi da definire !!
+        
+        elif request.method == 'GET':
+            # carico la pagina per la creazione di un nuovo post 
+            return jsonify({"message": "pagina creaizone post"}), 200 # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return jsonify({"message": "Utente non loggato"}), 401
 
 
-# per visualizzare il profilo di un utente
-@server.route('/profile/<int:user_id>/', methods=['GET'])
-def profile(user_id):
-    if session['logged_in'] == True:
+# ---------------- route per la visualizzare un profilo ---------------------- #
+@server.route('/profile/<int:id>/', methods=['GET'])
+def profile():
+    if session.get('logged_in') == True:
         if request.method == 'GET':
-            # Query per recuperare informazioni sul profilo dell'utente (aggiugnere gestione errori)
-            profile_query = f"""
-                SELECT Profilo.*, 
-                    COUNT(Post.IDPost) AS NumPost,
-                    COUNT(Followers.IDUtenteSeguace) AS NumFollowers,
-                    COUNT(Following.IDUtenteSeguito) AS NumFollowing
-                FROM Profilo
-                LEFT JOIN Post ON Profilo.IDProfilo = Post.IDProfiloProvenienza
-                LEFT JOIN Followers ON Profilo.IDProfilo = Followers.IDUtenteSeguito
-                LEFT JOIN Following ON Profilo.IDProfilo = Following.IDUtenteSeguace
-                WHERE Profilo.IDProfilo = {user_id}
-            """
-            profile_info = executeQuery(profile_query)
 
-            # Query per recuperare i post dell'utente
+            user_id = session['codiceUtente']
+
+            # Query per recuperare informazioni sul profilo dell'utente
+            profile_query = f"""
+                                SELECT 
+                                    IDProfilo, 
+                                    Seguaci, 
+                                    Seguiti, 
+                                    NumeroDiPost, 
+                                    Privacy
+                                FROM 
+                                    Profilo
+                                WHERE 
+                                    IDProfilo = {user_id};
+                            """
+            profile_info = executeQuery(profile_query)
+            
+            # Controlla se il profilo è privato
+            is_private = profile_info[0]['Privacy'] == 1 
+
+            # Se il profilo è privato, restituisci solo le informazioni sul profilo e indica che è privato, senza andare a recuperare le infomazioni dei post
+            if is_private:
+                return jsonify({"message": "Profilo torvato e privato"}), 200# !!  pagina poi da definire !!
+            
+            # se il profilo è pubblico recupero anche le informazioni dei suoi post
             posts_query = f"""
                 SELECT * FROM Post
                 WHERE IDProfiloProvenienza = {user_id}
             """
             user_posts = executeQuery(posts_query)
 
-            return render_template('profile.html', profile_info=profile_info[0], user_posts=user_posts) # !! nome pagina poi da definire !!
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
+            #  carico la pagina del profilo con le relative informazioni e i suoi post
+            return jsonify({"message": "Profilo torvato e pubblico"}), 200 # !!  pagina poi da definire !!
+        
+        return jsonify({"message": "Metodo non consentito"}), 405
     else:
-            return jsonify({"message": "Utente non loggato"}), 404
+        return jsonify({"message": "Utente non loggato"}), 401
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
 @server.route('/trending/', methods=['GET'])
@@ -236,30 +274,6 @@ def post_id_unlike(id):
 @server.route('/post/<int:id>/comment/<int:comment_id>/delete/')
 def post_id_comment_id_delete(id, comment_id):
     return f"<h1> post {id} comment {comment_id} delete </h1>"
-
-@server.route('/create_post/', methods=['GET', 'POST'])
-def create_post():
-    if session['logged_in'] == True:
-        if request.method == 'POST':
-            # prendo i dati del form
-            descrizione = request.form['descrizione']
-            percorso_file = request.form['percorso_file']
-
-            # inserisco le informazioni del nuovo post nel db
-            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', '{session['user_id']}')"
-            executeQuery(query)
-
-            # aggiorno lapplicaizone e rindirizzo alla pagina principale 
-            return redirect(url_for('index')) # !! nome pagina poi da definire !!
-        
-        elif request.method == 'GET':
-            # carico la pagina per la creazione di un nuovo post 
-            return render_template('create_post.html') # !! nome pagina poi da definire !!
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
-    else:
-        return jsonify({"message": "Utente non loggato"}), 405
-
 
 # menu impostazioni
 @server.route('/settings/')
