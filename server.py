@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request, render_template, url_for, redirect, s
 from datetime import timedelta
 import pymysql                                                                  # usato nel tempo per la sessione
 import credentials                                                              # usato per importare credenziali utili
-import hashlib                                                                  # usato per la conversione della password in hash mediante l'algoritmo sha-256
+import hashlib     
+from scriptCartelleUtenti  import creaCartella                                                         # usato per la conversione della password in hash mediante l'algoritmo sha-256
 
 
 server = Flask(__name__)
@@ -111,6 +112,8 @@ def register():
         if res==-1:
             return jsonify({"message": "Utente già registrato"}), 409
         else:
+            # creo la cartella dove memorizzare i vari futuri media del nuovo utente
+            creaCartella(codice_utente)
             return jsonify({"message": "Utente registrato con successo"}), 200 
         
     else:
