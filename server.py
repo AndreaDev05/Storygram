@@ -30,7 +30,7 @@ server.secret_key = credentials.chiave_segreta
 #route di home storygram !!!!
 @server.route('/')
 def home():
-    return render_template("about_storygram.html", title = "About storygram") # !! nome pagina poi da definire !!
+    return render_template("about_storygram.html", title = "About storygram") # !!  pagina poi da definire !!
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
@@ -256,11 +256,36 @@ def post_comment():
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
+    
+# ---------------- route per gestione messaggi ---------------------- #
+@server.route('/messages/', methods=['GET', 'POST'])
+def messages():
+    if session['logged_in'] == True:
+        if request.method == 'GET':
 
+            # Recupero l'id del profilo con cui è la chat (da implementare)
+            id_amico = -1 # debug
 
+            # Query per ottenere i messaggi ricevuti dal profilo loggato
+            query = f"SELECT * FROM Messaggio WHERE (IDProfiloDestinatario = {session['codiceUtente']} AND  IDProfiloMittente ={id_amico}) OR (IDProfiloDestinatario = {id_amico} AND IDProfiloMittente = {session['codiceUtente']}) ORDER BY Data DESC"
+            messages_received = executeQuery(query, fetchall=True)
+        elif request.method == 'POST':
 
+            # Recupera i dati inviati dal form
+            Messaggio = request.form.get('Messaggio')
 
-#  -------- sezione di avvio server --------
+            # Recupero l'id del profilo con cui è la chat (da implementare)
+            id_amico = -1 # debug
+
+            # inserisco i dati del messaggio nel database
+            query = f"INSERT INTO Messaggio (Messaggio, Data, IDProfiloMittente, IDProfiloDestinatario) VALUES ('{Messaggio}', NOW(), {session['codiceUtente']}, {id_amico})"
+            executeQuery(query)
+
+            return jsonify({"message": "Messaggio inserito"}), 200 # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+            return jsonify({"message": "Utente non loggato"}), 401
 
 if __name__ == "__main__":
 
