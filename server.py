@@ -27,10 +27,13 @@ server.secret_key = credentials.chiave_segreta
  
 # ---------- sezione delle route -----------
 
-#route di home storygram !!!!
+
 @server.route('/')
 def home():
-    return render_template("about_storygram.html", title = "About storygram") # !!  pagina poi da definire !!
+    if session.get('logged_in'):
+        return render_template("layout_base.html", names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+    else:
+        return render_template('login.html')
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])

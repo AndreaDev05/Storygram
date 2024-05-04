@@ -3,34 +3,38 @@
 {% macro story_layout(nome_utente, path_imgP, seen) %}
     <button class="btn story-user">
         <span class="icon-story">
-            <img class=
-            {% if path_imgP != "" and seen %}
-                "story-user-icon seen"
+            <img class="
+            {% if path_imgP != '' and seen %}
+                'story-user-icon seen'
             {% endif %}
-            {% if path_imgP != "" %}
-                "story-user-icon"
-            {% endif %}
-            src={{ '"' + path_imgP + '"' }} alt="user-icon">
+            {% if path_imgP != '' %}
+                'story-user-icon'
+            {% endif %}"
+            src="{{path_imgP}}" alt='user-icon'>
         </span>
         <span class="story-text">{{nome_utente}}</span>
     </button>
 {% endmacro %}
+
+{% block content %}
 
 <!DOCTYPE html>
 <html lang="it" data-bs-theme="light">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
-        <script src="./bootstrap-5.3.3-dist/js/jquery-3.7.1.min.js"></script>
+        <link rel="stylesheet" href="{{url_for('static', filename='bootstrap-5.3.3-dist/css/bootstrap.css')}}">
+        <script src="{{url_for('static', filename='bootstrap-5.3.3-dist/js/jquery-3.7.1.min.js')}}"></script>
         <title> STORYGRAM </title>
     </head>
     <body class="bg-success">
         <div class="row vh-100 d-flex flex-row-reverse">
             <div class="col-lg col-sm main-col stories pt-sm-6">
-                { % for name, path, seen in names,paths,s % }
+                
+                {% for name, path, seen in names, paths, seen_s %}
                     {{ story_layout(name, path, seen) }}
-                { % endfor % }
+                {% endfor %}
+                
             </div>
             <div class="col-7 main-col content">
                 <div class="post">
@@ -70,7 +74,7 @@
                 </button>
             </div>
         </div>
-        <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
+        <script src="{{url_for('static', filename='bootstrap-5.3.3-dist/js/bootstrap.js')}}"></script>
         <script>
             $(document).ready(function(){
                 $(".btn-sidebar").on("click",function(){
@@ -81,3 +85,4 @@
         </script>
     </body>
 </html>
+{% endblock %}
