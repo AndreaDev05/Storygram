@@ -33,6 +33,12 @@
   --bs-on-surface-variant: #40484C;
 
 
+  /*url immagini*/
+  --url-icon-home: url("../../icons/home_icon_light.svg.svg");
+  --url-icon-home-hover: url("../../icons/home_icon_light_hover.svg");
+
+  --url-icon-add: url("../../icons/add_icon_light.svg");
+  --url-icon-add-hover: url("../../icons/add_icon_light_hover.svg");
 
 
 
@@ -64,6 +70,16 @@
   --bs-on-error-container: #FFDAD6;
   --bs-on-surface: #E1E2E4;
   --bs-on-surface-variant: #E1E2E4;
+
+
+  /*url immagini*/
+  --url-icon-home: url("../../icons/home_icon_dark.svg");
+  --url-icon-home-hover: url("../../icons/home_icon_dark_hover.svg");
+
+
+  --url-icon-add: url("../../icons/add_icon_dark.svg");
+  --url-icon-add-hover: url("../../icons/add_icon_dark_hover.svg");
+
 }
 
 *,
@@ -895,7 +911,7 @@ progress {
   --bs-gutter-y: 3rem;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 431px) {
   .col-sm {
     flex: 1 0 0%;
   }
@@ -1233,7 +1249,7 @@ progress {
     --bs-gutter-y: 3rem;
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 1281px) {
   .col-lg {
     flex: 1 0 0%;
   }
@@ -2855,6 +2871,26 @@ textarea.form-control-lg {
 .was-validated .input-group > .form-floating:not(:focus-within):invalid,
 .input-group > .form-floating:not(:focus-within).is-invalid {
   z-index: 4;
+}
+
+.add-icon{
+  content: var(--url-icon-add);
+  background-repeat: no-repeat;
+}
+
+.home-icon{
+  content: var(--url-icon-home);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar:hover img.add-icon{
+  content: var(--url-icon-add-hover);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar:hover img.home-icon{
+  content: var(--url-icon-home-hover);
+  background-repeat: no-repeat;
 }
 
 .text-sidebar{
@@ -9669,6 +9705,39 @@ textarea.form-control-lg {
     text-align: center !important;
   }
 }
+
+@media(max-width: 1280px){
+  .sidebar{
+    padding-right: 0.94vw;
+    padding-left: 1.875vw;
+  }
+  .w-sidebars{
+    width:auto;
+  }
+  .btn-sidebar{
+    margin: 0;
+  }
+  .btn-sidebar{
+    align-items: center !important;
+    width: auto;
+    padding: 0;
+  }
+  .icon-sidebar{
+    margin: 0;
+  }
+  .text-sidebar{
+    display: none;
+  }
+  .content{
+    margin-left: 4.14vw;
+    margin-right: 4.14vw;
+    width: 62.5vw;
+  }
+  .stories{
+    width: 25.47vw;
+  }
+}
+
 @media(max-width: 575px){
   .main-col{
     width: 100% !important;
