@@ -34,12 +34,20 @@
 
 
   /*url immagini*/
-  --url-icon-home: url("../../icons/home_icon_light.svg.svg");
+  --url-icon-home: url("../../icons/home_icon_light.svg");
   --url-icon-home-hover: url("../../icons/home_icon_light_hover.svg");
+
+  --url-icon-search: url("../../icons/search_icon_light.svg");
+  --url-icon-search-hover: url("../../icons/search_icon_light_hover.svg");
 
   --url-icon-add: url("../../icons/add_icon_light.svg");
   --url-icon-add-hover: url("../../icons/add_icon_light_hover.svg");
 
+  --url-icon-message: url("../../icons/message_icon_light.svg");
+  --url-icon-message-hover: url("../../icons/message_icon_light_hover.svg");
+  
+  --url-icon-user: url("../../icons/user_icon_light.svg");
+  --url-icon-user-hover: url("../../icons/user_icon_light_hover.svg");
 
 
 }
@@ -76,9 +84,17 @@
   --url-icon-home: url("../../icons/home_icon_dark.svg");
   --url-icon-home-hover: url("../../icons/home_icon_dark_hover.svg");
 
+  --url-icon-search: url("../../icons/search_icon_dark.svg");
+  --url-icon-search-hover: url("../../icons/search_icon_dark_hover.svg");
 
   --url-icon-add: url("../../icons/add_icon_dark.svg");
   --url-icon-add-hover: url("../../icons/add_icon_dark_hover.svg");
+
+  --url-icon-message: url("../../icons/message_icon_dark.svg");
+  --url-icon-message-hover: url("../../icons/message_icon_dark_hover.svg");
+  
+  --url-icon-user: url("../../icons/user_icon_dark.svg");
+  --url-icon-user-hover: url("../../icons/user_icon_dark_hover.svg");
 
 }
 
@@ -2873,24 +2889,58 @@ textarea.form-control-lg {
   z-index: 4;
 }
 
-.add-icon{
-  content: var(--url-icon-add);
-  background-repeat: no-repeat;
-}
-
 .home-icon{
   content: var(--url-icon-home);
   background-repeat: no-repeat;
 }
 
-.btn-sidebar:hover img.add-icon{
+.search-icon{
+  content: var(--url-icon-search);
+  background-repeat: no-repeat;
+}
+
+.add-icon{
+  content: var(--url-icon-add);
+  background-repeat: no-repeat;
+}
+
+.message-icon{
+  content: var(--url-icon-message);
+  background-repeat: no-repeat;
+}
+
+.user-icon{
+  content: var(--url-icon-user);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected .home-icon{
+  content: var(--url-icon-home-hover);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected .search-icon{
+  content: var(--url-icon-search-hover);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected .add-icon{
   content: var(--url-icon-add-hover);
   background-repeat: no-repeat;
 }
 
-.btn-sidebar:hover img.home-icon{
-  content: var(--url-icon-home-hover);
+.btn-sidebar.selected .message-icon{
+  content: var(--url-icon-message-hover);
   background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected .user-icon{
+  content: var(--url-icon-user-hover);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected span{
+  color: var(--bs-outline);
 }
 
 .text-sidebar{
@@ -2902,12 +2952,24 @@ textarea.form-control-lg {
   margin-right: 0.78vw;
 }
 
+.sidebar{
+  padding-left: 1.25vw;
+}
+
 .btn-sidebar{
   width:19.2vw;
   background: transparent;
   height:7.4vh;
   display:flex !important;
   align-items: center !important;
+  border-radius: 8px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+
+} 
+
+.btn-sidebar:hover{
+  background-color: rgba(0, 0, 0, .1) !important; 
 }
 
 .btn {
@@ -9707,6 +9769,10 @@ textarea.form-control-lg {
 }
 
 @media(max-width: 1280px){
+  .btn-sidebar:hover{
+    background-color: transparent !important;
+  }
+
   .sidebar{
     padding-right: 0.94vw;
     padding-left: 1.875vw;
