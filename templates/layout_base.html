@@ -1,6 +1,6 @@
 <!-- LAYOUT PRINCIPALE DOVE VERRANO ESTESI TUTTI GLI ALTRI HTML -->
-<!--
-{% macro story_layput(nome_utente, path_imgP, seen) %}
+
+{% macro story_layout(nome_utente, path_imgP, seen) %}
     <button class="btn story-user">
         <span class="icon-story">
             <img class=
@@ -14,7 +14,7 @@
         </span>
         <span class="story-text">{{nome_utente}}</span>
     </button>
-{% endmacro %}-->
+{% endmacro %}
 
 <!DOCTYPE html>
 <html lang="it" data-bs-theme="light">
@@ -28,45 +28,14 @@
     <body class="bg-success">
         <div class="row vh-100 d-flex flex-row-reverse">
             <div class="col-lg col-sm main-col stories pt-sm-6">
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-                <button class="btn story-user ">
-                    <span class="icon-story">
-                        <img class="story-user-icon" src="" alt="user-icon">
-                    </span>
-                    <span class="story-text">Nome utente</span>
-                </button>
-
+                { % for name, path, seen in names,paths,s % }
+                    {{ story_layout(name, path, seen) }}
+                { % endfor % }
             </div>
             <div class="col-7 main-col content">
+                <div class="post">
+                    
+                </div>
             </div>
             <div class="col-lg col-sm-1 w-sidebars pt-sm-6 main-col sidebar">
                 <button type="button" class="btn btn-sidebar" role="button">
