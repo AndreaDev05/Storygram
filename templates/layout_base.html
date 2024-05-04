@@ -1,4 +1,20 @@
 <!-- LAYOUT PRINCIPALE DOVE VERRANO ESTESI TUTTI GLI ALTRI HTML -->
+<!--
+{% macro story_layput(nome_utente, path_imgP, seen) %}
+    <button class="btn story-user">
+        <span class="icon-story">
+            <img class=
+            {% if path_imgP != "" and seen %}
+                "story-user-icon seen"
+            {% endif %}
+            {% if path_imgP != "" %}
+                "story-user-icon"
+            {% endif %}
+            src={{ '"' + path_imgP + '"' }} alt="user-icon">
+        </span>
+        <span class="story-text">{{nome_utente}}</span>
+    </button>
+{% endmacro %}-->
 
 <!DOCTYPE html>
 <html lang="it" data-bs-theme="light">
@@ -11,39 +27,75 @@
     </head>
     <body class="bg-success">
         <div class="row vh-100 d-flex flex-row-reverse">
-            <div class="col-lg col-sm main-col stories">
-                ciao
+            <div class="col-lg col-sm main-col stories pt-sm-6">
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+                <button class="btn story-user ">
+                    <span class="icon-story">
+                        <img class="story-user-icon" src="" alt="user-icon">
+                    </span>
+                    <span class="story-text">Nome utente</span>
+                </button>
+
             </div>
             <div class="col-7 main-col content">
             </div>
-            <div class="col-lg col-sm-1 w-sidebars mt-sm-6 main-col sidebar">
+            <div class="col-lg col-sm-1 w-sidebars pt-sm-6 main-col sidebar">
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
-                        <img class="home-icon" src="..." alt="img_home">
+                        <img class="home-icon" src="" alt="img_home">
                     </span>
                     <span class="text-sidebar">Home</span>
                 </button>
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
-                        <img class="search-icon" src="..." alt="img_search">
+                        <img class="search-icon" src="" alt="img_search">
                     </span>
                     <span class="text-sidebar">Cerca</span>
                 </button>
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
-                        <img class="add-icon" src="..." width="24px" height="24px">
+                        <img class="add-icon" src="" width="24px" height="24px">
                     </span>
                     <span class="text-sidebar">Crea</span>
                 </button>
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
-                        <img class="message-icon" src="..." alt="img_message">
+                        <img class="message-icon" src="" alt="img_message">
                     </span>
                     <span class="text-sidebar">Messaggi</span>
                 </button>
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
-                        <img class="user-icon" src="..." alt="img_user">
+                        <img class="user-icon" src="" alt="img_user">
                     </span>
                     <span class="text-sidebar">Profilo</span>
                 </button>
