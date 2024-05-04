@@ -23,3 +23,14 @@ def executeQuery(query):
     except Exception as e: # se avviene un errore ritorno -1 come codice di errore
         print(e)
         return jsonify({"message": "Errore durante l'esecuzione della query"}), 500
+
+# Query per verificare se l'utente sta seguendo il profilo
+def is_following(user_id, profile_id):
+    
+    follow_query = f"""
+                        SELECT COUNT(*) AS cnt
+                        FROM Seguaci
+                        WHERE IDFollower = {user_id} AND IDSeguito = {profile_id};
+                    """
+    result = executeQuery(follow_query)
+    return result[0]['cnt'] > 0

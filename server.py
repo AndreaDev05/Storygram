@@ -7,7 +7,7 @@ from datetime import timedelta # usato per impostare la durata di una sessione
 import credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
-from db_control import executeQuery # usato per la comunicazione con il db
+from db_control import executeQuery, is_following # usato per la comunicazione con il db
 
 server = Flask(__name__)
 
@@ -133,10 +133,12 @@ def create_post():
 
 # ---------------- route per la visualizzare un profilo ---------------------- #
 @server.route('/profile/<int:id>/', methods=['GET'])
-def profile():
+def profile(id):
     if session.get('logged_in') == True:
         if request.method == 'GET':
-
+            # Verifica se l'utente corrente è il proprietario del profilo o lo sta seguendo
+            is_owner_or_following = session['codiceUtente'] == id or is_following(session['codiceUtente'], id)
+            
             # Query per recuperare informazioni sul profilo dell'utente
             profile_query = f"""
                                 SELECT 
@@ -148,30 +150,37 @@ def profile():
                                 FROM 
                                     Profilo
                                 WHERE 
-                                    IDProfilo = {session['codiceUtente']};
+                                    IDProfilo = {id};
                             """
             profile_info = executeQuery(profile_query)
             
             # Controlla se il profilo è privato
             is_private = profile_info[0]['Privacy'] == 1 
 
-            # Se il profilo è privato, restituisci solo le informazioni sul profilo e indica che è privato, senza andare a recuperare le infomazioni dei post
-            if is_private:
-                return jsonify({"message": "Profilo torvato e privato"}), 200# !!  pagina poi da definire !!
+            # Se il profilo è privato e l'utente non è il proprietario né lo sta seguendo, restituisci solo un messaggio di profilo privato
+            if is_private and not is_owner_or_following:
+                return jsonify({"message": "Profilo privato"}), 200
             
-            # se il profilo è pubblico recupero anche le informazioni dei suoi post
-            posts_query = f"""
-                SELECT * FROM Post
-                WHERE IDProfiloProvenienza = {session['codiceUtente']}
-            """
-            user_posts = executeQuery(posts_query)
+            # Recupera i post solo se il profilo è pubblico o se l'utente è il proprietario o lo sta seguendo
+            if not is_private or is_owner_or_following:
+                posts_query = f"""
+                    SELECT * FROM Post
+                    WHERE IDProfiloProvenienza = {id}
+                """
+                user_posts = executeQuery(posts_query)
 
-            #  carico la pagina del profilo con le relative informazioni e i suoi post
-            return jsonify({"message": "Profilo torvato e pubblico"}), 200 # !!  pagina poi da definire !!
-        
+                # Restituisci le informazioni sul profilo e i post
+                return jsonify({
+                    "profile_info": profile_info,
+                    "user_posts": user_posts
+                }), 200
+            
+            return jsonify({"message": "Profilo privato"}), 200
+
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
+
     
 # ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
 @server.route('/settings/', methods=['GET', 'POST'])
