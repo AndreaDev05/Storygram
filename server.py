@@ -39,7 +39,10 @@ def home():
 @server.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html") # !! nome pagina poi da definire !!
+        if session.get('logged_in'):
+            return redirect("http://contabile.e-fermi.it:11023/", code=302)
+        else:
+            return render_template('login.html')
     if request.method == "POST":
         # Recupera i dati inviati dal form
         codiceUtente = request.form['codiceUtente']
@@ -58,9 +61,9 @@ def login():
             session['logged_in'] = True
             session['codiceUtente'] = risp[0]['CodiceUtente']
 
-            return jsonify({"message": "Utente Loggato con successo"}), 200
+            return redirect("http://contabile.e-fermi.it:11023/", code=302)
         else:                                                           
-            return jsonify({"message": "Utente o Password errata"}), 404  # Se l'utente non esiste o la password è errata
+            return render_template("login.html")
 
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
@@ -69,7 +72,10 @@ def login():
 @server.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        return render_template('registration.html')  # Redirect alla pagina di registrazione
+        if session.get('logged_in'):
+            return redirect("http://contabile.e-fermi.it:11023/", code=302)
+        else:
+            return render_template('registration.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         codice_utente = request.form['CodiceUtente']
@@ -96,18 +102,16 @@ def register():
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore 
     
 # ---------------- route per effettuare il logout ---------------------- #
-@server.route('/logout/', methods=["POST"])
+@server.route('/logout/', methods=["GET"])
 def logout():
-    if session['logged_in'] == True:
-        if request.method == "POST":
+    if session.get('logged_in') == True:
+        if request.method == "GET":
             # elimino i dati di sessione 
             session.clear()
             # reindirizzo alla pagina principale
-            return jsonify({"message": "logout effettuato"}), 200 # !!  pagina poi da definire !!
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
+            return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
 
 # ---------------- route per la creazione di un nuovo post ---------------------- #
 @server.route('/post/create/', methods=['GET', 'POST'])
@@ -301,5 +305,5 @@ def messages():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=True, port=11125)
+    server.run(host='0.0.0.0',debug=True, port=11023)
 
