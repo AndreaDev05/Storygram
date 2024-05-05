@@ -75,7 +75,7 @@ def register():
         if session.get('logged_in'):
             return redirect("http://contabile.e-fermi.it:11023/", code=302)
         else:
-            return render_template('registration.html')  # Redirect alla pagina di registrazione
+            return render_template('registrazione.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         codice_utente = request.form['CodiceUtente']
