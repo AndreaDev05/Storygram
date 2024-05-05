@@ -186,7 +186,6 @@ def profile(id):
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
-
     
 # ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
 @server.route('/settings/', methods=['GET', 'POST'])
@@ -238,6 +237,14 @@ def trending():
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
+
+# ---------------- route per ricercare un utente ---------------------- #
+@server.route('/search/', methods=['POST'])
+def search():
+    print(request.form)
+
+
+
     
 # ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
 @server.route('/post/comments/', methods=['GET', 'POST'])
@@ -249,7 +256,7 @@ def post_comment():
             post_id = -1 # debug
 
             query = f"SELECT * FROM Commento WHERE IDPost = '{post_id}'" # recupero i commenti del post relativo all'id
-            comments = executeQuery(query, fetchall=True)
+            comments = executeQuery(query)
 
             return render_template('comments.html', comments=comments) # redirect alla pagina dei commenti
 
@@ -282,7 +289,7 @@ def messages():
 
             # Query per ottenere i messaggi ricevuti dal profilo loggato
             query = f"SELECT * FROM Messaggio WHERE (IDProfiloDestinatario = {session['codiceUtente']} AND  IDProfiloMittente ={id_amico}) OR (IDProfiloDestinatario = {id_amico} AND IDProfiloMittente = {session['codiceUtente']}) ORDER BY Data DESC"
-            messages_received = executeQuery(query, fetchall=True)
+            messages_received = executeQuery(query)
         elif request.method == 'POST':
 
             # Recupera i dati inviati dal form
