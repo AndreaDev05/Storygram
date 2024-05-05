@@ -8,26 +8,26 @@ Registrazione
 
 {% block form %}
 
-<form action="{{ url_for('login') }}" method="POST">
+<form action="{{ url_for('register') }}" method="POST">
   <div class="form-group">
     <label for="input-nome" class="input-text"> Nome </label> 
-    <input type="text" id="input-nome" class="input-dati form-control" name="..." placeholder="Codice utente">
+    <input type="text" id="input-nome" class="input-dati form-control" name="Nome" placeholder="Nome">
   </div>
   <div class="form-group">
     <label for="input-cogn" class="input-text"> Cognome </label> 
-    <input type="text" id="input-cogn" class="input-dati form-control" name="..." placeholder="Cognome">
+    <input type="text" id="input-cogn" class="input-dati form-control" name="Cognome" placeholder="Cognome">
   </div>
   <div class="form-group">
     <label for="input-pass" class="input-text"> Password </label> 
-    <input type="password" id="input-pass" class="input-dati form-control" name="..." placeholder="Password">
+    <input type="password" id="input-pass" class="input-dati form-control" name="Password" placeholder="Password">
   </div>
   <div class="form-group">
     <label for="input-pst" class="input-text"> Periodo storico </label> 
-    <input type="text" id="input-pst" class="input-dati form-control" name="..." placeholder="Periodo storico">
+    <input type="text" id="input-pst" class="input-dati form-control" name="PeriodoStorico" placeholder="Periodo storico">
   </div>
   <div class="form-group">
     <label for="input-cdr" class="input-text"> Codice di recupero </label> 
-    <input type="text" id="input-cdr" class="input-dati form-control" name="..." placeholder="Codice di recupero">
+    <input type="text" id="input-cdr" class="input-dati form-control" name="CodiceDiRecupero" placeholder="Codice di recupero">
   </div>
   <button class="btn widget-btn form-btn" type="submit">Registrati</button>
 </form>

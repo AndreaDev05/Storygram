@@ -53,6 +53,9 @@
   --url-icon-story-user: url("../../icons/story_user_icon_light.svg");
   --url-icon-story-user-seen: url("../../icons/story_user_icon_light_seen.svg");
 
+  --url-icon-story-user-profile: url("../../icons/story_user_profile_icon_light.svg");
+  --url-icon-story-user-profile-seen: url("../../icons/story_user_profile_icon_light_seen.svg");
+
 
 }
 
@@ -101,8 +104,8 @@
   --url-icon-user: url("../../icons/user_icon_dark.svg");
   --url-icon-user-hover: url("../../icons/user_icon_dark_hover.svg");
 
-  --url-icon-story-user: url("../../icons/story_user_icon_dark.svg");
-  --url-icon-story-user-seen: url("../../icons/story_user_icon_dark_seen.svg");
+  --url-icon-story-user-profile: url("../../icons/story_user_profile_icon_dark.svg");
+  --url-icon-story-user-profile-seen: url("../../icons/story_user_profile_icon_dark_seen.svg");
 }
 
 *,
@@ -2917,9 +2920,19 @@ textarea.form-control-lg {
   background-color: rgba(0, 0, 0, .2) !important;
 }
 
+.info-user{
+  height: 28.98vh;
+}
+
 .form-btn{
   width: 10.42vw;
   height: 4.26vh;
+  margin:auto;
+}
+
+.profile-btn{
+  width: 8.54vw;
+  height: 3.7vh;
   margin:auto;
 }
 
@@ -3027,6 +3040,16 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
 }
 
+.story-user-icon-profile{
+  content: var(--url-icon-story-user-profile);
+  background-repeat: no-repeat;
+}
+
+.story-user-icon-profile.seen{
+  content: var(--url-icon-story-user-profile-seen);
+  background-repeat: no-repeat;
+}
+
 .btn-sidebar.selected .home-icon{
   content: var(--url-icon-home-hover);
   background-repeat: no-repeat;
@@ -3063,6 +3086,54 @@ textarea.form-control-lg {
 .icon-sidebar{
   margin-left: 6.2vw;
   margin-right: 0.78vw;
+}
+
+.numero-dati{
+  font-size: 24px;
+}
+
+.tipo-dati{
+  font-size: 12px;
+}
+
+.desc-user{
+  height: 16.85vh;
+}
+
+.desc-title{
+  font-size: 24px;
+}
+
+.desc-text{
+  font-size:24px;
+}
+
+.title-post{
+  font-size:36px;
+  text-align:center;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.post-user{
+  height: auto;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(var(--bs-outline-rgb),.25);
+
+}
+
+.profile-data{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.profile-image{
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .sidebar{
@@ -9927,6 +9998,9 @@ textarea.form-control-lg {
   .form-btn{
     width:15.63vw;
     height:4.49vh;
+  }
+  .content:has(div):has(.post-user) .stories{
+    display:none;
   }
 }
 

@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="col-lg col-sm-1 w-sidebars pt-sm-6 main-col sidebar">
-                <button type="button" class="btn btn-sidebar" role="button">
+                <button type="button" class="btn btn-sidebar" role="button" onclick="renderHome()">
                     <span class="icon-sidebar">
                         <img class="home-icon" src="" alt="img_home">
                     </span>
@@ -86,6 +86,10 @@
                     $(this).addClass("selected");
                 })
             });
+
+            function renderHome() {
+                window.location.href="{{url_for('home')}}";
+            }
 
             function renderProfile(){
                 window.location.href="{{url_for('profile', id=ID)}}";

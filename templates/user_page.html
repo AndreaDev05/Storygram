@@ -3,18 +3,67 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="row info-user">
 
+<div class="row info-user">
+    <div class="col-4 profile-image" >
+        <img class="story-user-icon-profile" src="" alt="profile_picture">
     </div>
-    <div class="row desc-user">
-        <label for="">
-            <b>Descrizione</b>
-        </label>
-    </div>
-    <div class="row post-user">
-
+    <div class="col-8">
+        <div class="row h-50">
+            <div class="col profile-data">
+                {{ nomeUtente }}
+                ciao
+            </div>
+            <div class="col profile-data">
+                <span class="numero-dati">
+                    {{numeroPost}}
+                    0
+                </span><br>
+                <span class="tipo-dati">
+                    Numero post
+                </span>
+            </div>
+            <div class="col profile-data">
+                <span class="numero-dati">
+                    {{numeroFollowers}}
+                    0
+                </span><br>
+                <span class="tipo-dati">
+                    Numero followers
+                </span>
+            </div>
+            <div class="col profile-data">
+                <span class="numero-dati">
+                    {{numeroSeguiti}}
+                    0
+                </span><br>
+                <span class="tipo-dati">
+                    Numero seguiti
+                </span>
+            </div>
+        </div>
+        <div class="row h-50">
+            <div class="col profile-data flex-row">
+                <button class="btn widget-btn profile-btn">Modifica</button>
+                <button class="btn widget-btn profile-btn">Messaggi</button>
+            </div>
+        </div>
     </div>
 </div>
+<div class="row desc-user">
+    <label class="desc-title" for="#desc">
+        <b>Descrizione</b>
+    </label>
+    <pre class="desc-text" id="desc">
+Lorem ipsum dolor sit amet consectetur. Feugiat eleifend vel convallis eu fusce sit semper pharetra sem.
+Quisque vitae id quam eget aliquam adipiscing pellentesque cras. 
+Fermentum pulvinar in sit iaculis viverra erat. Diam pretium at eget cras faucibus.
+    </pre>
+    
+</div>
+<div class="row post-user">
+    <label class="title-post" for=""><b>POST</b></label>
+</div>
+
 
 {% endblock %}

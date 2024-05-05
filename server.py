@@ -8,6 +8,7 @@ import credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
+import json # usato per manipolare i json (esempio last codice utente)
 
 server = Flask(__name__)
 
@@ -31,7 +32,7 @@ server.secret_key = credentials.chiave_segreta
 @server.route('/')
 def home():
     if session.get('logged_in'):
-        return render_template("home.html", ID=session['codiceUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+        return render_template("home.html", ID=session['IDUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')
     
@@ -60,7 +61,7 @@ def login():
         # Se l'utente esiste e la password è corretta, la sessione viene avviata
         if risp:
             session['logged_in'] = True
-            session['codiceUtente'] = risp[0]['CodiceUtente']
+            session['IDUtente'] = risp[0]['IDUtente']
 
             return redirect("http://contabile.e-fermi.it:11023/", code=302)
         else:                                                           
@@ -79,29 +80,46 @@ def register():
             return render_template('registrazione.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
-        codice_utente = request.form['CodiceUtente']
+        nome = request.form['Nome']
+        cognome = request.form['Cognome']
         password = request.form['Password']
         periodo_storico = request.form['PeriodoStorico']
         codice_di_recupero = request.form['CodiceDiRecupero']
 
-        # Codifica la password in codice hash
+        # Codifica la password in codice hash e il relativo codice di recupero
         password_hash = hashlib.sha256(password.encode()).hexdigest()
+        codice_di_recupero_hash = hashlib.sha256(codice_di_recupero.encode()).hexdigest()
+
+        # calcolo il codice utente
+        # apro il file e leggo il codice, incremento di 1 e lo riscrivo nel file
+        UltimoCodiceUtente = None
+        PathImmagineProfiloBase = None
+        with open("permanent_data/UltimoCodiceUtente.json", "r") as file:
+            diz = json.load(file)
+            UltimoCodiceUtente = diz["UltimoCodiceUtente"] + 1
+            PathImmagineProfiloBase = diz["PathImmagineProfiloBase"]
+            file.close()
+        with open("permanent_data/UltimoCodiceUtente.json", "w") as file:
+            file.write( json.dumps({"UltimoCodiceUtente" : UltimoCodiceUtente, "PathImmagineProfiloBase" : PathImmagineProfiloBase}, indent=4) )
+            file.close()
 
         # Esegui la query SQL per inserire l'utente nel database (aggiungi gestione errori)
-        query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ({codice_utente}, '{password_hash}', '{periodo_storico}', {codice_di_recupero})"
-        res = executeQuery(query)
-        
-        # Se l'utente è gia registrato do errore
-        if res==-1:
-            return jsonify({"message": "Utente già registrato"}), 409
-        else:
+        try:
+            executeQuery("START TRANSACTION") # essendo che devo fare più query atomiche uso le transazioni
+            query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{UltimoCodiceUtente}', '{password_hash}', '{periodo_storico}', '{codice_di_recupero_hash}')"
+            executeQuery(query)
+            ris = executeQuery(f"SELECT IDUtente FROM Utente WHERE CodiceUtente = '{UltimoCodiceUtente}'")
+            query = f"INSERT INTO Profilo (IDProfilo, Nome, Cognome, PathImmagineProfilo) VALUES ('{ris[0]['IDUtente']}', '{nome}', '{cognome}', '{PathImmagineProfiloBase}')"
+            executeQuery(query)
+            executeQuery("COMMIT")
+
             # creo la cartella dove memorizzare i vari futuri media del nuovo utente
-            creaCartella(codice_utente)
-            return jsonify({"message": "Utente registrato con successo"}), 200  # !!  pagina poi da definire !!
+            creaCartella(ris[0]['IDUtente'])
+            return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
+        except:
+            #executeQuery("ROLLBACK") # serve anche se da errore o il dbms fa il rollback in automatico ??????
+            return jsonify({"message": "Errore interno al server. Riprovare più tardi"}), 500
         
-    else:
-        return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore 
-    
 # ---------------- route per effettuare il logout ---------------------- #
 @server.route('/logout/', methods=["GET"])
 def logout():
@@ -132,7 +150,7 @@ def create_post():
         
         elif request.method == 'GET':
             # carico la pagina per la creazione di un nuovo post 
-            return jsonify({"message": "pagina creaizone post"}), 200 # !!  pagina poi da definire !!
+            return jsonify({"message": "pagina creazione post"}), 200 # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
@@ -145,7 +163,7 @@ def profile(id):
     if session.get('logged_in') == True:
         if request.method == 'GET':
             # Verifica se l'utente corrente è il proprietario del profilo o lo sta seguendo
-            is_owner_or_following = session['codiceUtente'] == id or is_following(session['codiceUtente'], id)
+            is_owner_or_following = session['IDUtente'] == id or is_following(session['IDUtente'], id)
             
             # Query per recuperare informazioni sul profilo dell'utente
             profile_query = f"""
@@ -219,15 +237,15 @@ def trending():
         if request.method == 'GET':
             # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni) (aggiugnere gestione errori)
             query = """
-                SELECT Post.*, 
-                    COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
-                    COUNT(Commento.IDPostDestinazione) AS NumCommenti
-                FROM Post
-                LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
-                LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
-                WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                GROUP BY Post.IDPost
-                ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione)) DESC
+                    SELECT Post.*, 
+                        COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+                        COUNT(Commento.IDPostDestinazione) AS NumCommenti
+                    FROM Post
+                    LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+                    LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+                    WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                    GROUP BY Post.IDPost
+                    ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione) * 1.5) DESC
             """
             trending_posts = executeQuery(query) 
 
