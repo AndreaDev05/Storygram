@@ -1,0 +1,30 @@
+{% extends "layout_base.html" %}
+
+
+{% block profile %}
+
+<!-- info utente -->
+<div>
+    <img src="{{pathImmagineProfilo}}" alt="ImmagineProfilo"> <strong> {{Nomeutente}} </strong> <div> <div> {{NumeroDiPost}} </div> <br> <div> <small>Numero Post</small> </div> </div> <div> <div> {{Seguaci}} </div> <br> <div> <small>Followers</small> </div> </div> <div> <div> {{Seguiti}} </div> <br> <div> <small>Seguiti</small> </div> </div>
+    <div>
+        <div>
+            <strong>Descrizione</strong>
+        </div> <br>
+        <div>
+            {{Descrizione}}
+        </div>
+    </div>
+</div>
+<hr style=" border-top: solid 1px #000 !important">
+<p style="text-align: center;">POST</p>
+<!-- post -->
+<div>
+    {% for post in posts %}
+        <div>
+            <img src="{{post['PercorsoFile']}}" alt="ImmaginePost">
+            <p>{{post['Descrizione']}}</p> <small>{{post['Data']}}</small>
+        </div> <!-- FIXARE LA STAMPA DEI POST -->
+    {% endfor %}
+</div>
+
+{% endblock %}

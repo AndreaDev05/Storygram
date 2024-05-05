@@ -31,14 +31,20 @@
         <div class="row vh-100 d-flex flex-row-reverse">
             <div class="col-lg col-sm main-col stories pt-sm-6">
                 
-                {% for name, path, seen in names, paths, seen_s %}
-                    {{ story_layout(name, path, seen) }}
-                {% endfor %}
+                {% block rightside %}
+                {% endblock %}
                 
             </div>
             <div class="col-7 main-col content">
-                <div class="post">
+                <div id="main_frame"> <!-- mi serve questo div in modo che poss renderizzare il profilo
+                    <div class="post">
                     
+                    </div>
+                    -->
+                    
+                    {% block profile %}
+                    {% endblock %}
+
                 </div>
             </div>
             <div class="col-lg col-sm-1 w-sidebars pt-sm-6 main-col sidebar">
@@ -66,7 +72,7 @@
                     </span>
                     <span class="text-sidebar">Messaggi</span>
                 </button>
-                <button type="button" class="btn btn-sidebar" role="button">
+                <button type="button" class="btn btn-sidebar" role="button" onclick="renderProfile()">
                     <span class="icon-sidebar">
                         <img class="user-icon" src="" alt="img_user">
                     </span>
@@ -82,6 +88,10 @@
                     $(this).addClass("selected");
                 })
             });
+
+            function renderProfile(){
+                window.location.href="{{url_for('profile', id=ID)}}";
+            }
         </script>
     </body>
 </html>
