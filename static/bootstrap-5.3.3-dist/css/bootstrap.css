@@ -14,6 +14,7 @@
   --bs-neutral: #8F9193;
   --bs-error: #BA1A1A;
   --bs-outline: #70787D;
+  --bs-outline-rgb: 112,120,125;
   --bs-on-primary: #FFFFFF;
   --bs-on-secondary: #FFFFFF;
   --bs-on-tertiary: #FFFFFF;
@@ -64,6 +65,7 @@
   --bs-neutral: #8F9193;
   --bs-error: #FFB4AB;
   --bs-outline: #8A9296;
+  --bs-outline-rgb: 138,146,150;
   --bs-on-primary: #003545;
   --bs-on-secondary: #4A2800;
   --bs-on-tertiary: #003354;
@@ -3064,6 +3066,9 @@ textarea.form-control-lg {
 }
 
 .sidebar{
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: rgba(var(--bs-outline-rgb),.25) !important;
   padding-left: 1.25vw;
 }
 

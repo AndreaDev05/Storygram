@@ -30,10 +30,13 @@ server.secret_key = credentials.chiave_segreta
 
 @server.route('/')
 def home():
-    if session.get('logged_in'):
+    """if session.get('logged_in'):
         return render_template("home.html", ID=session['codiceUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
-        return render_template('login.html')
+        return render_template('login.html')"""
+    
+    return render_template("home.html", ID=3, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
