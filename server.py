@@ -30,13 +30,11 @@ server.secret_key = credentials.chiave_segreta
 
 @server.route('/')
 def home():
-    """if session.get('logged_in'):
+    if session.get('logged_in'):
         return render_template("home.html", ID=session['codiceUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
-        return render_template('login.html')"""
+        return render_template('login.html')
     
-    return render_template("home.html", ID=3, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
-
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
@@ -180,7 +178,7 @@ def profile(id):
                 posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
                 user_posts = executeQuery(posts_query)
                 print(user_posts)
-                return render_template('profile.html', ID=id, Nomeutente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], Descrizione=profile_info[0]['Descrizione'], NumeroDiPost=profile_info[0]['NumeroDiPost'], PathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], Seguaci=profile_info[0]['Seguaci'], Seguiti=profile_info[0]['Seguiti'], Privacy=profile_info[0]['Privacy'], posts=[user_posts])
+                return render_template('user_page.html', ID=id, Nomeutente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], Descrizione=profile_info[0]['Descrizione'], NumeroDiPost=profile_info[0]['NumeroDiPost'], PathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], Seguaci=profile_info[0]['Seguaci'], Seguiti=profile_info[0]['Seguiti'], Privacy=profile_info[0]['Privacy'], posts=[user_posts])
             
             
             return jsonify({"message": "Profilo privato"}), 200
