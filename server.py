@@ -31,7 +31,7 @@ server.secret_key = credentials.chiave_segreta
 @server.route('/')
 def home():
     if session.get('logged_in'):
-        return render_template("layout_base.html", names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+        return render_template("home.html", ID=session['codiceUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')
 
@@ -149,10 +149,13 @@ def profile(id):
             # Query per recuperare informazioni sul profilo dell'utente
             profile_query = f"""
                                 SELECT 
-                                    IDProfilo, 
-                                    Seguaci, 
-                                    Seguiti, 
-                                    NumeroDiPost, 
+                                    Nome,
+                                    Cognome,
+                                    Descrizione,
+                                    NumeroDiPost,
+                                    PathImmagineProfilo,
+                                    Seguaci,
+                                    Seguiti,
                                     Privacy
                                 FROM 
                                     Profilo
@@ -170,17 +173,12 @@ def profile(id):
             
             # Recupera i post solo se il profilo è pubblico o se l'utente è il proprietario o lo sta seguendo
             if not is_private or is_owner_or_following:
-                posts_query = f"""
-                    SELECT * FROM Post
-                    WHERE IDProfiloProvenienza = {id}
-                """
+                
+                posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
                 user_posts = executeQuery(posts_query)
-
-                # Restituisci le informazioni sul profilo e i post
-                return jsonify({
-                    "profile_info": profile_info,
-                    "user_posts": user_posts
-                }), 200
+                print(user_posts)
+                return render_template('profile.html', ID=id, Nomeutente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], Descrizione=profile_info[0]['Descrizione'], NumeroDiPost=profile_info[0]['NumeroDiPost'], PathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], Seguaci=profile_info[0]['Seguaci'], Seguiti=profile_info[0]['Seguiti'], Privacy=profile_info[0]['Privacy'], posts=[user_posts])
+            
             
             return jsonify({"message": "Profilo privato"}), 200
 
