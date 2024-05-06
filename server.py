@@ -93,14 +93,12 @@ def register():
         # calcolo il codice utente
         # apro il file e leggo il codice, incremento di 1 e lo riscrivo nel file
         UltimoCodiceUtente = None
-        PathImmagineProfiloBase = None
         with open("permanent_data/UltimoCodiceUtente.json", "r") as file:
             diz = json.load(file)
             UltimoCodiceUtente = diz["UltimoCodiceUtente"] + 1
-            PathImmagineProfiloBase = diz["PathImmagineProfiloBase"]
             file.close()
         with open("permanent_data/UltimoCodiceUtente.json", "w") as file:
-            file.write( json.dumps({"UltimoCodiceUtente" : UltimoCodiceUtente, "PathImmagineProfiloBase" : PathImmagineProfiloBase}, indent=4) )
+            file.write( json.dumps({"UltimoCodiceUtente" : UltimoCodiceUtente}, indent=4) )
             file.close()
 
         # Esegui la query SQL per inserire l'utente nel database (aggiungi gestione errori)
