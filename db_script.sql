@@ -3,7 +3,7 @@ CREATE TABLE Utente (
     CodiceUtente int NOT NULL UNIQUE,
     Password varchar(200) NOT NULL,
     PeriodoStorico varchar(10) NOT NULL,
-    CodiceDiRecupero int NOT NULL
+    CodiceDiRecupero varchar(200) NOT NULL
     );
 
 CREATE TABLE Profilo (
@@ -12,7 +12,7 @@ CREATE TABLE Profilo (
     Cognome varchar(25) NOT NULL,
     Descrizione text(200) NOT NULL DEFAULT "",
     NumeroDiPost int NOT NULL DEFAULT 0,
-    PathImmagineProfilo varchar(100) NOT NULL DEFAULT "PATH DA DEFINIRE",
+    PathImmagineProfilo varchar(100) NOT NULL DEFAULT "utenti/default/ImmagineProfiloBase.jpg",
     Seguaci int NOT NULL DEFAULT 0,
     Seguiti int NOT NULL DEFAULT 0,
     Privacy BIT(1) NOT NULL DEFAULT 0, -- 0 PROFILO PUBBLICO, 1 PROFILO PRIVATO --> i computer sono più veloci coi numeri che con le stringhe
