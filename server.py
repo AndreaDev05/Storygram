@@ -109,7 +109,7 @@ def register():
             query = f"INSERT INTO Utente (CodiceUtente, Password, PeriodoStorico, CodiceDiRecupero) VALUES ('{UltimoCodiceUtente}', '{password_hash}', '{periodo_storico}', '{codice_di_recupero_hash}')"
             executeQuery(query)
             ris = executeQuery(f"SELECT IDUtente FROM Utente WHERE CodiceUtente = '{UltimoCodiceUtente}'")
-            query = f"INSERT INTO Profilo (IDProfilo, Nome, Cognome, PathImmagineProfilo) VALUES ('{ris[0]['IDUtente']}', '{nome}', '{cognome}', '{PathImmagineProfiloBase}')"
+            query = f"INSERT INTO Profilo (IDProfilo, Nome, Cognome) VALUES ('{ris[0]['IDUtente']}', '{nome}', '{cognome}')"
             executeQuery(query)
             executeQuery("COMMIT")
 
