@@ -1,0 +1,19 @@
+{
+    "name": "StoryGram",
+    "short_name": "StoryGram",
+    "start_url": "/",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "/storygram_logo_small.png",  
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/storygram_logo_big.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ]
+  }
+  
