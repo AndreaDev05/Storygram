@@ -42,7 +42,7 @@ def home():
 def login():
     if request.method == "GET":
         if session.get('logged_in'):
-            return redirect("http://contabile.e-fermi.it:11023/", code=302)
+            return redirect("http://storygram.it", code=302)
         else:
             return render_template('login.html')
     if request.method == "POST":
@@ -63,7 +63,7 @@ def login():
             session['logged_in'] = True
             session['IDUtente'] = risp[0]['IDUtente']
 
-            return redirect("http://contabile.e-fermi.it:11023/", code=302)
+            return redirect("http://storygram.it", code=302)
         else:                                                           
             return render_template("login.html")
 
@@ -75,7 +75,7 @@ def login():
 def register():
     if request.method == 'GET':
         if session.get('logged_in'):
-            return redirect("http://contabile.e-fermi.it:11023/", code=302)
+            return redirect("http://storygram.it", code=302)
         else:
             return render_template('registrazione.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
@@ -113,7 +113,7 @@ def register():
 
             # creo la cartella dove memorizzare i vari futuri media del nuovo utente
             creaCartella(ris[0]['IDUtente'])
-            return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
+            return redirect("http://storygram.it/login/", code=302)
         except:
             #executeQuery("ROLLBACK") # serve anche se da errore o il dbms fa il rollback in automatico ??????
             return jsonify({"message": "Errore interno al server. Riprovare più tardi"}), 500
@@ -126,9 +126,9 @@ def logout():
             # elimino i dati di sessione 
             session.clear()
             # reindirizzo alla pagina principale
-            return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
+            return redirect("http://storygram.it/login/", code=302)
     else:
-        return redirect("http://contabile.e-fermi.it:11023/login/", code=302)
+        return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per la creazione di un nuovo post ---------------------- #
 @server.route('/post/create/', methods=['GET', 'POST'])
