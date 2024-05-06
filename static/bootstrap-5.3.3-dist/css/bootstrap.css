@@ -56,6 +56,9 @@
   --url-icon-story-user-profile: url("../../icons/story_user_profile_icon_light.svg");
   --url-icon-story-user-profile-seen: url("../../icons/story_user_profile_icon_light_seen.svg");
 
+  --url-icon-story-user-profile-mobile: url("../../icons/story_user_icon_profile_mobile_light.svg");
+  --url-icon-story-user-profile-mobile-seen: url("../../icons/story_user_icon_profile_mobile_seen_light.svg");
+
 
 }
 
@@ -106,6 +109,9 @@
 
   --url-icon-story-user-profile: url("../../icons/story_user_profile_icon_dark.svg");
   --url-icon-story-user-profile-seen: url("../../icons/story_user_profile_icon_dark_seen.svg");
+
+  --url-icon-story-user-profile-mobile: url("../../icons/story_user_icon_profile_mobile_dark.svg");
+  --url-icon-story-user-profile-mobile-seen: url("../../icons/story_user_icon_profile_mobile_seen_dark.svg");
 }
 
 *,
@@ -9985,6 +9991,7 @@ textarea.form-control-lg {
     margin-left: 4.14vw;
     margin-right: 4.14vw;
     width: 62.5vw;
+    margin: 0px;
   }
   .stories{
     width: 25.47vw;
@@ -10025,10 +10032,19 @@ textarea.form-control-lg {
     height: 7.73vh;
     display: flex;
     flex-wrap: nowrap;
+    border-top-color: rgba(var(--bs-outline-rgb),.25);
+    border-top-width: 1px;
+    border-top-style: solid;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
   }
   .btn-sidebar{
     align-items: center !important;
-    margin:auto;
+    margin-right:auto;
+    margin-left: auto;
     width: auto;
   }
   .icon-sidebar{
@@ -10039,6 +10055,10 @@ textarea.form-control-lg {
   }
   .content{
     height: 76.82vh;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
   }
   .stories{
     display: flex;
@@ -10070,6 +10090,35 @@ textarea.form-control-lg {
   }
   .side-images{
     display: none;
+  }
+  .profile-btn{
+    font-size: 16px !important;
+    width:22.93vw;
+    height: 3.22vh;
+  }
+  .numero-dati{
+    font-size: 16px !important;
+  }
+  body:has(div.post-user) .nome-utente{
+    display: flex !important;
+    border-bottom-color: rgba(var(--bs-outline-rgb),.25);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+  .nome-lg{
+    display: none;
+  }
+  .story-user-icon-profile{
+    content: var(--url-icon-story-user-profile-mobile);
+    background-repeat: no-repeat;
+  }
+  .story-user-icon-profile.seen{
+    content: var(--url-icon-story-user-profile-mobile-seen);
+    background-repeat: no-repeat;
+  }
+  .profile-image{
+    align-items: baseline;
+    padding-top: 2.5rem;
   }
 }
 

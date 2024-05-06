@@ -26,14 +26,18 @@
         <title> STORYGRAM </title>
     </head>
     <body>
-        <div class="row vh-100 d-flex flex-row-reverse justify-content-start align-items-end">
+        <div class="row vh-100 m-auto d-flex flex-row-reverse justify-content-start">
+            <span class="nome-utente d-none fixed-top">
+                <b>{{ nomeUtente }}</b>
+                <b>Nome utente</b>
+            </span>
             <div class="col-lg col-sm main-col stories pt-sm-6">
                 
                 {% block rightside %}
                 {% endblock %}
                 
             </div>
-            <div class="col-lg col main-col content">
+            <div class="col-lg-7 col-7 main-col content">
                 <div id="main_frame"> <!-- mi serve questo div in modo che poss renderizzare il profilo
                     <div class="post">
                     
