@@ -5,14 +5,9 @@
     "display": "standalone",
     "icons": [
       {
-        "src": "/storygram_logo_small.png",  
+        "src": "icons/storygram_logo_standard.png",  
         "type": "image/png",
-        "sizes": "192x192"
-      },
-      {
-        "src": "/storygram_logo_big.png",
-        "type": "image/png",
-        "sizes": "512x512"
+        "sizes": "500x500"
       }
     ]
   }
