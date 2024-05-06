@@ -1,0 +1,19 @@
+avantamento back end con creazione route per
+-   login
+-   registrazione
+-   creazione post
+-   impostazioni
+-   commenti
+-   profilo
+-   trending
+-   fix al database e al codice precedentemente scritto
+-   creazione cartelle utenti al momento della registraizone
+-   nolleggiato vps ed effetuata installazione dei pacchetti necessari  al funzionamento della web app e isntallazioen db
+-   richiesto certificato ssl e modifiche al dns per associare il dominio precedentemente acquistato al ip pubblico del server
+avanzamento front end :
+-   login front end
+-   registrazione front end
+-   menu responsive
+-   visualizzazione profilo front ed
+-   importazione risorse necessarie allo sviluppo (icons e immagini) dal progetto di figma precedentemente realizzato
+-   creazione logo per webapp
