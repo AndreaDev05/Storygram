@@ -7968,7 +7968,7 @@ textarea.form-control-lg {
 }
 
 .justify-content-start {
-  justify-content: flex-start !important;
+  justify-content: start !important;
 }
 
 .justify-content-end {
@@ -9999,8 +9999,21 @@ textarea.form-control-lg {
     width:15.63vw;
     height:4.49vh;
   }
-  .content:has(div):has(.post-user) .stories{
+  .profile-btn{
+    width:12.81vw;
+    height:3.91vh;
+  }
+  body:has(div.post-user) .stories{
     display:none;
+  }
+  body:has(div.post-user) .content{
+    width: 87.19vw;
+  }
+}
+
+@media(max-width: 760px){
+  .profile-btn{
+    width:21.58vw;
   }
 }
 

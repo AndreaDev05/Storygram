@@ -5,7 +5,7 @@ chiave_segreta = "63YUYAbo2xllzmOXQ36GwjTVmmS6URNt"
 
 #   parametri di connessione al database
 host = 'localhost'
-user = 's02797'
-password = ''
-database = ''
+user = 's02571'
+password = 'ieG7qu'
+database = 's02571'
 port = 3306
