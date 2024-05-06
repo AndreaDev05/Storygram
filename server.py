@@ -199,12 +199,48 @@ def profile(id):
                 return render_template('user_page.html', ID=id, Nomeutente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], Descrizione=profile_info[0]['Descrizione'], NumeroDiPost=profile_info[0]['NumeroDiPost'], PathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], Seguaci=profile_info[0]['Seguaci'], Seguiti=profile_info[0]['Seguiti'], Privacy=profile_info[0]['Privacy'], posts=[user_posts])
             
             
-            return jsonify({"message": "Profilo privato"}), 200
+            return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
 
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
+        return jsonify({"message": "Utente non loggato"}), 401  # !!  pagina poi da definire !!
+
+# ---------------- route per la visualizzare i follower di un profilo ---------------------- #
+@server.route('/profile/<int:id>/followers/', methods=['GET'])
+def followers(id):
+    if session.get('logged_in') == True:
+        if request.method == 'GET':
+            # Recupera i follower del profilo
+            query = f"""
+                    SELECT Profilo.*
+                    FROM Profilo
+                    INNER JOIN Segue ON Profilo.IDProfilo = Segue.Seguace
+                    WHERE Segue.Seguito = {id};
+            """
+            followers_info = executeQuery(query)
+            return render_template('followers.html', followers=followers_info)
+        return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+
+# ---------------- route per la visualizzare i seguiti di un profilo ---------------------- #
+@server.route('/profile/<int:id>/following/', methods=['GET'])
+def following(id):
+    if session.get('logged_in') == True:
+        if request.method == 'GET':
+            # Recupera i seguiti del profilo
+            query = f"""
+                    SELECT Profilo.*
+                    FROM Profilo
+                    INNER JOIN Segue ON Profilo.IDProfilo = Segue.Seguito
+                    WHERE Segue.Seguace = {id};
+            """
+            following_info = executeQuery(query)
+            return jsonify({"message": "Seguiti trovati"}), 405  # !!  pagina poi da definire !!
+        return jsonify({"message": "Metodo non consentito"}), 405
+    else:
         return jsonify({"message": "Utente non loggato"}), 401
-    
+        
 # ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
 @server.route('/settings/', methods=['GET', 'POST'])
 def settings():
@@ -228,7 +264,7 @@ def settings():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
 @server.route('/trending/', methods=['GET'])
@@ -254,7 +290,7 @@ def trending():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
 
 # ---------------- route per ricercare un utente ---------------------- #
 @server.route('/search/', methods=['POST'])
