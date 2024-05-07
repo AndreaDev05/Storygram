@@ -1,7 +1,4 @@
 
-# problema route setting: nella query se viene modificata la privacy il db da sempre errore di dato troppo lungo
-# problema dell'attributo nel db????
-
 from flask import Flask, jsonify, request, render_template, url_for, redirect, session   # usato per flask
 from datetime import timedelta # usato per impostare la durata di una sessione
 import credentials # usato per importare credenziali utili
@@ -11,7 +8,6 @@ from db_control import executeQuery, is_following # usato per la comunicazione c
 import json # usato per manipolare i json (esempio last codice utente)
 
 server = Flask(__name__)
-
 
 #   con questo comando noi impostiamo la modalità del server in modalità
 #   di debug avendo quindi il vantaggio che non servirà ricaricare le varie
@@ -28,14 +24,12 @@ server.secret_key = credentials.chiave_segreta
  
 # ---------- sezione delle route -----------
 
-
 @server.route('/')
 def home():
     if session.get('logged_in'):
         return render_template("home.html", ID=session['IDUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
-        return render_template('login.html')
-    
+        return render_template('login.html')  
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
@@ -118,7 +112,7 @@ def register():
             #executeQuery("ROLLBACK") # serve anche se da errore o il dbms fa il rollback in automatico ??????
             return jsonify({"message": "Errore interno al server. Riprovare più tardi"}), 500
 
-# --------------- route il recuepro della passowrd ---------------------- #
+# --------------- route il consentire il recupero della passowrd ---------------------- #
 @server.route('/recovery/', methods=['GET', 'POST'])
 def recovery():
     if request.method == 'GET':
@@ -140,6 +134,7 @@ def recovery():
         else:
             return jsonify({"message": "Codice utente o codice di recupero non corretti"}), 400
 
+# --------------- route per il cambio della password vero e proprio ---------------------- #
 @server.route('/recovery/reset/', methods=['GET', 'POST'])
 def recovery_reset():
     if session['CodiceUtente']:
@@ -349,8 +344,8 @@ def search():
 
     
 # ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
-@server.route('/post/comments/', methods=['GET', 'POST'])
-def post_comment():
+@server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
+def post_comment(post_id):
     if session['logged_in'] == True:
         if request.method == 'GET':
 
@@ -379,7 +374,39 @@ def post_comment():
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return jsonify({"message": "Utente non loggato"}), 401
-    
+
+# ---------------- route per visualizzare i like di un post o agigugnerne uno o toglierlo ---------------------- #
+@server.route('/post/like/', methods=['GET', 'POST'])
+def post_like():
+    if session['logged_in'] == True:
+        if request.method == 'GET':
+            # Recupero l'id del post relativo al like 
+            post_id = -1 # debug
+
+            # Query per ottenere i like del post
+            query = f"SELECT * FROM MiPiace WHERE IDPost = '{post_id}'"
+            likes = executeQuery(query)
+
+            return render_template('likes.html', likes=likes) # redirect alla pagina dei like (da definire)
+        elif request.method == 'POST':
+            # Recupera i dati inviati dal form
+            like = request.form.get('like')
+            post_id = request.form.get('post_id')
+            id_provenienza = session['IDUtente']
+            
+            # a secoda se è un like o un un-like eseguo la giusta query
+            if like == True:
+                query = f"INSERT INTO MiPiace (Data, IDProfiloProvenienza, IDPostDestinazione) VALUES (NOW(), {id_provenienza}, {post_id})"
+                executeQuery(query)
+            elif like == False:
+                query = f"DELETE FROM MiPiace WHERE IDProfiloProvenienza = {id_provenienza} AND IDPostDestinazione = {post_id}"
+                executeQuery(query)
+
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405 # !!  pagina poi da definire !!
+    else:
+            return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+  
 # ---------------- route per gestione messaggi ---------------------- #
 @server.route('/messages/', methods=['GET', 'POST'])
 def messages():
