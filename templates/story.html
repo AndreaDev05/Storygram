@@ -10,15 +10,28 @@
 </head>
     <body>
         <div class="row vh-100 m-auto">
-            <div class="col">
-                <span>
-                    <img class="user-icon" width="72px" height="72px">
-                </span>
+            <div class="col-12 col-sm info-user-story">
+                <div class="d-flex flex-row flex-sm-column text-center">
+                    <span class="user-image-story mb-4">
+                        <img class="user-icon" width="72px" height="72px">
+                    </span>
+                    <div class="d-flex flex-column">
+                        <span class="user-name-story mb-4">
+                            {{ nomeUtente }}
+                            Nome Utente
+                        </span>
+                        <span class="user-period-story mb-4">
+                            {{ periodoStorico }}
+                            Periodo storico
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="col">
-
+            <div class="col d-flex justify-content-center align-items-center">
+                <div class="img-story">
+                </div>
             </div>
-            <div class="col">
+            <div class="col-lg">
                 
             </div>
 

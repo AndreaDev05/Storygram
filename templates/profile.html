@@ -1,30 +1,68 @@
 {% extends "layout_base.html" %}
 
 
-{% block profile %}
+{% block content %}
 
-<!-- info utente -->
-<div>
-    <img src="{{pathImmagineProfilo}}" alt="ImmagineProfilo"> <strong> {{Nomeutente}} </strong> <div> <div> {{NumeroDiPost}} </div> <br> <div> <small>Numero Post</small> </div> </div> <div> <div> {{Seguaci}} </div> <br> <div> <small>Followers</small> </div> </div> <div> <div> {{Seguiti}} </div> <br> <div> <small>Seguiti</small> </div> </div>
-    <div>
-        <div>
-            <strong>Descrizione</strong>
-        </div> <br>
-        <div>
-            {{Descrizione}}
+
+<div class="row info-user">
+    <div class="col-4 profile-image" >
+        <img class="story-user-icon-profile" src="" alt="profile_picture">
+    </div>
+    <div class="col-8">
+        <div class="row h-50">
+            <div class="col profile-data nome-lg">
+                {{ nomeUtente }}
+            </div>
+            <div class="col profile-data align-self-end align-self-sm-center">
+                <span class="numero-dati">
+                    {{numeroDiPost}}
+                </span><br>
+                <span class="tipo-dati">
+                    Post
+                </span>
+            </div>
+            <div class="col profile-data align-self-end align-self-sm-center">
+                <span class="numero-dati">
+                    {{seguaci}}
+                </span><br>
+                <span class="tipo-dati">
+                    Followers
+                </span>
+            </div>
+            <div class="col profile-data align-self-end align-self-sm-center">
+                <span class="numero-dati">
+                    {{seguiti}}
+                </span><br>
+                <span class="tipo-dati">
+                    Seguiti
+                </span>
+            </div>
+        </div>
+        <div class="row h-50">
+            <div class="col profile-data flex-row">
+                <input type="hidden"  id="c1" name="IDUtente" value="{{ ID }}">
+                {% if is_owner == True %}
+                <button class="btn widget-btn profile-btn">Modifica</button>
+                {% else %}
+                <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button>
+                {% endif %}
+                <button class="btn widget-btn profile-btn">Messaggi</button>
+            </div>
         </div>
     </div>
 </div>
-<hr style=" border-top: solid 1px #000 !important">
-<p style="text-align: center;">POST</p>
-<!-- post -->
-<div>
-    {% for post in posts %}
-        <div>
-            <img src="{{post['PercorsoFile']}}" alt="ImmaginePost">
-            <p>{{post['Descrizione']}}</p> <small>{{post['Data']}}</small>
-        </div> <!-- FIXARE LA STAMPA DEI POST -->
-    {% endfor %}
+<div class="row desc-user px-5 px-sm-0">
+    <label class="desc-title" for="#desc">
+        <b>Descrizione</b>
+    </label>
+    <pre class="desc-text" id="desc">
+        {{descrizione}}
+    </pre>
+    
 </div>
+<div class="row post-user">
+    <label class="title-post" for=""><b>POST</b></label>
+</div>
+
 
 {% endblock %}

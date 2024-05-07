@@ -8,23 +8,24 @@ Login
 
 {% block form %}
 
+<!-- form di login -->
 <form action="{{ url_for('login') }}" method="POST">
-  <div class="form-group">
+  <div class="form-group"> <!-- campo per inserire il codice utente -->
     <label for="input-codUd" class="input-text"> Codice Utente </label> 
     <input type="text" id="input-codUd" class="input-dati form-control" name="codiceUtente" placeholder="Codice utente">
   </div>
-  <div class="form-group">
+  <div class="form-group"> <!-- campo per inserire la password -->
     <label for="input-pass" class="input-text"> Password </label> 
     <input type="password" id="input-pass" class="input-dati form-control" name="password" placeholder="Password">
   </div>
-  <div class="form-group">
+  <div class="form-group"> <!-- link per andare alla pagina di registrazione o per resettare ka password  -->
     <span>
       <a class="link-form" href="{{url_for('register')}}">Registrati</a>
     </span><br>
     <span>
       <a class="link-form" href="#">Hai dimenticato la password?</a>
     </span>
-  </div>
+  </div> <!-- pulsante per accedere -->
   <button class="btn widget-btn form-btn" type="submit">Accedi</button>
 </form>
 

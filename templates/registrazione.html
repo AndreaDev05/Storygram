@@ -1,5 +1,5 @@
 {% extends "layout_base_login_reg.html" %}
-
+{% set %}
 {% block title %}
 
 Registrazione
@@ -8,31 +8,39 @@ Registrazione
 
 {% block form %}
 
+<!-- form per effettuare la registrazione di un nuovo utente -->
 <form action="{{ url_for('register') }}" method="POST">
   <input type="hidden"  id="c" name="codiceUtente" value="{{ codice }}">
+  <!-- campo per inserire il nome del nuovo utente -->
   <div class="form-group">
     <label for="input-nome" class="input-text"> Nome </label> 
     <input type="text" id="input-nome" class="input-dati form-control" name="Nome" placeholder="Nome">
   </div>
+  <!-- campo per inserire il cognome del nuovo utente -->
   <div class="form-group">
     <label for="input-cogn" class="input-text"> Cognome </label> 
     <input type="text" id="input-cogn" class="input-dati form-control" name="Cognome" placeholder="Cognome">
   </div>
+  <!-- campo per inserire la password del nuovo utente -->
   <div class="form-group">
     <label for="input-pass" class="input-text"> Password </label> 
     <input type="password" id="input-pass" class="input-dati form-control" name="Password" placeholder="Password">
   </div>
+  <!-- campo per inserire il periodo storico del nuovo utente -->
   <div class="form-group">
     <label for="input-pst" class="input-text"> Periodo storico </label> 
     <input type="text" id="input-pst" class="input-dati form-control" name="PeriodoStorico" placeholder="Periodo storico">
   </div>
+  <!-- campo per inserire il codice di reucepro del nuovo utente-->
   <div class="form-group">
     <label for="input-cdr" class="input-text"> Codice di recupero </label> 
     <input type="text" id="input-cdr" class="input-dati form-control" name="CodiceDiRecupero" placeholder="Codice di recupero">
   </div>
+  <!-- pulsante per effettuare la registrazione -->
   <button class="btn widget-btn form-btn" type="submit">Registrati</button>
 </form>
 
+<!-- script per msotrare il codice utente generato dal server, per accedere al profilo -->
 <script>
   $(document).ready(function(){
     $("button").on("click",function(){

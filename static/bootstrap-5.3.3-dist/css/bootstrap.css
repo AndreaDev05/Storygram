@@ -50,6 +50,9 @@
   --url-icon-user: url("../../icons/user_icon_light.svg");
   --url-icon-user-hover: url("../../icons/user_icon_light_hover.svg");
 
+  --url-icon-logout: url("../../icons/logout_icon_light.svg");
+  --url-icon-logout-hover: url("../../icons/logout_icon_light_hover.svg");
+
   --url-icon-story-user: url("../../icons/story_user_icon_light.svg");
   --url-icon-story-user-seen: url("../../icons/story_user_icon_light_seen.svg");
 
@@ -58,7 +61,6 @@
 
   --url-icon-story-user-profile-mobile: url("../../icons/story_user_icon_profile_mobile_light.svg");
   --url-icon-story-user-profile-mobile-seen: url("../../icons/story_user_icon_profile_mobile_seen_light.svg");
-
 
 }
 
@@ -106,6 +108,9 @@
   
   --url-icon-user: url("../../icons/user_icon_dark.svg");
   --url-icon-user-hover: url("../../icons/user_icon_dark_hover.svg");
+
+  --url-icon-logout: url("../../icons/logout_icon_dark.svg");
+  --url-icon-logout-hover: url("../../icons/logout_icon_dark_hover.svg");
 
   --url-icon-story-user-profile: url("../../icons/story_user_profile_icon_dark.svg");
   --url-icon-story-user-profile-seen: url("../../icons/story_user_profile_icon_dark_seen.svg");
@@ -2990,6 +2995,28 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
 }
 
+.info-user-story{
+  display:flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: center;
+}
+
+.user-name-story{
+  font-size:24px;
+}
+
+.user-period-story{
+  font-size:24px;
+}
+
+.img-story{
+  width: 26.04vw;
+  height: 87.96vh;
+  background-image: url("https://www.farodiroma.it/wp-content/uploads/2023/04/Foto-apertura-articolo-1-1.jpg");
+  background-repeat: repeat;
+}
+
 .search-icon{
   content: var(--url-icon-search);
   background-repeat: no-repeat;
@@ -3007,6 +3034,11 @@ textarea.form-control-lg {
 
 .user-icon{
   content: var(--url-icon-user);
+  background-repeat: no-repeat;
+}
+
+.logout-icon{
+  content: var(--url-icon-logout);
   background-repeat: no-repeat;
 }
 
@@ -3078,6 +3110,11 @@ textarea.form-control-lg {
 
 .btn-sidebar.selected .user-icon{
   content: var(--url-icon-user-hover);
+  background-repeat: no-repeat;
+}
+
+.btn-sidebar.selected .logout-icon{
+  content: var(--url-icon-logout-hover);
   background-repeat: no-repeat;
 }
 
@@ -10025,6 +10062,14 @@ textarea.form-control-lg {
   .title-post{
     font-size: 28px !important;  
   }
+  .info-user-story{
+    justify-content: center;
+    align-items: center;
+  }
+  .img-story{
+    width: 39.06vw;
+    height: 92.77vh;
+  }
 }
 
 @media(max-width: 760px){
@@ -10137,6 +10182,21 @@ textarea.form-control-lg {
   }
   .title-post{
     font-size: 24px !important;  
+  }
+  .info-user-story{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    margin-top: 2.5rem;
+  }
+  .img-story{
+    width: 100vw;
+    height: 100vh;
+  }
+  .user-name-story,.user-period-story{
+    font-size: 18px;
   }
 }
 

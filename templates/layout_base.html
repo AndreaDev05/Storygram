@@ -1,7 +1,8 @@
 <!-- LAYOUT PRINCIPALE DOVE VERRANO ESTESI TUTTI GLI ALTRI HTML -->
 
 {% macro story_layout(nome_utente, path_imgP, seen) %}
-    <button class="btn story-user">
+    <!-- imagine profilo dell'utente con pulsante integrato -->
+    <button class="btn story-user"> 
         <span class="icon-story">
             <img class="
             {% if path_imgP != '' and seen %}
@@ -12,7 +13,7 @@
             {% endif %}"
             src="{{path_imgP}}" alt='user-icon'>
         </span>
-        <span class="story-text">{{nome_utente}}</span>
+        <span class="story-text">{{ nomeUtente }}</span>
     </button>
 {% endmacro %}
 
@@ -28,7 +29,7 @@
     </head>
     <body>
         <div class="row vh-100 m-auto d-flex flex-row-reverse justify-content-start">
-            <span class="nome-utente d-none fixed-top">
+            <span class="nome-utente d-none fixed-top"> <!-- nome dell'utente -->
                 <b>{{ nomeUtente }}</b>
                 <b>Nome utente</b>
             </span>
@@ -50,40 +51,54 @@
 
                 </div>
             </div>
+            <!-- menu responsive -->
             <div class="col-lg col-sm-1 w-sidebars pt-sm-6 main-col sidebar">
+                <!-- bottone per redirect alla home di storygram-->
                 <button type="button" class="btn btn-sidebar" role="button" onclick="renderHome()">
                     <span class="icon-sidebar">
                         <img class="home-icon" src="" alt="img_home">
                     </span>
                     <span class="text-sidebar">Home</span>
                 </button>
+                <!-- bottone per redirect alla pagina di ricerca -->
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
                         <img class="search-icon" src="" alt="img_search">
                     </span>
                     <span class="text-sidebar">Cerca</span>
                 </button>
+                <!-- bottone per redirect alla pagina di creazione post-->
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
                         <img class="add-icon" src="" width="24px" height="24px">
                     </span>
                     <span class="text-sidebar">Crea</span>
                 </button>
+                <!-- bototne per redirect alla pagina dei messaggi -->
                 <button type="button" class="btn btn-sidebar" role="button">
                     <span class="icon-sidebar">
                         <img class="message-icon" src="" alt="img_message">
                     </span>
                     <span class="text-sidebar">Messaggi</span>
                 </button>
+                <!-- bottone per redirect alla pagina del profilo personale  -->
                 <button type="button" class="btn btn-sidebar" role="button" onclick="renderProfile()">
                     <span class="icon-sidebar">
                         <img class="user-icon" src="" alt="img_user">
                     </span>
                     <span class="text-sidebar">Profilo</span>
                 </button>
+                <!-- bttone per effettuare il logout dal profilo -->
+                <button type="button" class="btn btn-sidebar" role="button" onclick="logout()">
+                    <span class="icon-sidebar">
+                        <img class="logout-icon" src="" alt="img_user">
+                    </span>
+                    <span class="text-sidebar">Log-Out</span>
+                </button>
             </div>
         </div>
         <script src="{{url_for('static', filename='bootstrap-5.3.3-dist/js/bootstrap.js')}}"></script>
+        <!-- script per i vari redirect alle varie pagine del menu responsive -->
         <script>
             $(document).ready(function(){
                 $(".btn-sidebar").on("click",function(){
@@ -92,12 +107,25 @@
                 })
             });
 
+            // per il redirect alla pagina home 
             function renderHome() {
                 window.location.href="{{url_for('home')}}";
             }
 
+            // per il redirect alla pagina di un profilo 
             function renderProfile(){
                 window.location.href="{{url_for('profile', id=ID)}}";
+            }
+
+            // per effettuare il logout
+            function logout(){
+                window.location.href="{{url_for('logout')}}";
+            }
+
+            // per iniziare a seguire un utente
+            function seguiutente(){
+                valore = Document.getElementById("c1").value
+                window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
             }
         </script>
     </body>

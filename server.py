@@ -162,7 +162,7 @@ def recovery_reset():
         else:
                 return redirect("metodo non consentito", code=405)
     else:
-        return redirect("Utente non loggatto", code=401)
+        return redirect("http://storygram.it/login/", code=302)
         
 # ---------------- route per effettuare il logout ---------------------- #
 @server.route('/logout/', methods=["GET"])
@@ -198,7 +198,7 @@ def create_post():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return redirect("http://storygram.it/login/", code=302)
 
 
 # ---------------- route per la visualizzare un profilo ---------------------- #
@@ -210,21 +210,7 @@ def profile(id):
             is_owner_or_following = session['IDUtente'] == id or is_following(session['IDUtente'], id)
             
             # Query per recuperare informazioni sul profilo dell'utente
-            profile_query = f"""
-                                SELECT 
-                                    Nome,
-                                    Cognome,
-                                    Descrizione,
-                                    NumeroDiPost,
-                                    PathImmagineProfilo,
-                                    Seguaci,
-                                    Seguiti,
-                                    Privacy
-                                FROM 
-                                    Profilo
-                                WHERE 
-                                    IDProfilo = {id};
-                            """
+            profile_query = f"SELECT Nome, Cognome, Descrizione, NumeroDiPost, PathImmagineProfilo, Seguaci, Seguiti, Privacy FROM Profilo WHERE IDProfilo = {id};"
             profile_info = executeQuery(profile_query)
             
             # Controlla se il profilo è privato
@@ -240,14 +226,14 @@ def profile(id):
                 posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
                 user_posts = executeQuery(posts_query)
                 print(user_posts)
-                return render_template('user_page.html', ID=id, Nomeutente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], Descrizione=profile_info[0]['Descrizione'], NumeroDiPost=profile_info[0]['NumeroDiPost'], PathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], Seguaci=profile_info[0]['Seguaci'], Seguiti=profile_info[0]['Seguiti'], Privacy=profile_info[0]['Privacy'], posts=[user_posts])
-            
+                
+                return render_template('profile.html', ID=id, is_owner=True, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
             
             return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
 
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401  # !!  pagina poi da definire !!
+        return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per la visualizzare i follower di un profilo ---------------------- #
 @server.route('/profile/<int:id>/followers/', methods=['GET'])
@@ -265,7 +251,7 @@ def followers(id):
             return render_template('followers.html', followers=followers_info)
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+        return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per la visualizzare i seguiti di un profilo ---------------------- #
 @server.route('/profile/<int:id>/following/', methods=['GET'])
@@ -283,7 +269,7 @@ def following(id):
             return jsonify({"message": "Seguiti trovati"}), 405  # !!  pagina poi da definire !!
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return redirect("http://storygram.it/login/", code=302)
         
 # ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
 @server.route('/settings/', methods=['GET', 'POST'])
@@ -308,7 +294,7 @@ def settings():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+        return redirect("http://storygram.it/login/", code=401)
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
 @server.route('/trending/', methods=['GET'])
@@ -334,7 +320,7 @@ def trending():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+        return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per ricercare un utente ---------------------- #
 @server.route('/search/', methods=['POST'])
@@ -361,7 +347,7 @@ def search():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+        return redirect("http://storygram.it/login/", code=302)
     
 # ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
 @server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
@@ -393,7 +379,7 @@ def post_comment(post_id):
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-        return jsonify({"message": "Utente non loggato"}), 401
+        return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per visualizzare i like di un post o agigugnerne uno o toglierlo ---------------------- #
 @server.route('/post/like/', methods=['GET', 'POST'])
@@ -425,7 +411,7 @@ def post_like():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405 # !!  pagina poi da definire !!
     else:
-            return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
+            return redirect("http://storygram.it/login/", code=302)
   
 # ---------------- route per gestione messaggi ---------------------- #
 @server.route('/messages/', methods=['GET', 'POST'])
@@ -455,12 +441,31 @@ def messages():
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
-            return jsonify({"message": "Utente non loggato"}), 401
+            return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per gestione delle storie ---------------------- #
 @server.route('/story/', methods=['GET', 'POST'])
 def story():
-    return render_template("story.html")
+    if(session.get("logged_in")):
+        if request.method == 'GET':
+            return render_template("story.html") # !!  pagina poi da definire !!
+        elif request.method == 'POST':
+            return render_template("story.html") # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return redirect("http://storygram.it/login/", code=302)
+
+
+# ---------------- route per gestione del bottone per seguire ---------------------- #
+@server.route('/segui/<int:id_profilo_da_seguire>', methods=['GET', 'POST'])
+def segui(id_profilo_da_seguire):
+    if(session.get("logged_in")):
+        executeQuery(f"INSERT INTO Segue (Seguace, Seguito) VALUES ('{session['IDUtente']}', '{id_profilo_da_seguire}')")
+        render_template("profile.html") # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! variabili del template non passate nella funzione
+    else:
+        return redirect("http://storygram.it/login/", code=302)
+
 
 if __name__ == "__main__":
 
