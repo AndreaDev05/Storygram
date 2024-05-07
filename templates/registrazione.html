@@ -9,6 +9,7 @@ Registrazione
 {% block form %}
 
 <form action="{{ url_for('register') }}" method="POST">
+  <input type="hidden"  id="c" name="codiceUtente" value="{{ codice }}">
   <div class="form-group">
     <label for="input-nome" class="input-text"> Nome </label> 
     <input type="text" id="input-nome" class="input-dati form-control" name="Nome" placeholder="Nome">
@@ -35,7 +36,8 @@ Registrazione
 <script>
   $(document).ready(function(){
     $("button").on("click",function(){
-      alert("Il tuo codeice utente è: ",{{ codice }});
+      msg = "Il tuo codeice utente è: "+document.querySelector('#c').value;
+      alert(msg);
     })
   });
 </script>

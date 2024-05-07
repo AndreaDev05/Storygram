@@ -1,11 +1,12 @@
 
-from flask import Flask, jsonify, request, render_template, url_for, redirect, session   # usato per flask
+from flask import Flask, jsonify, request, render_template, redirect, session   # usato per flask
 from datetime import timedelta # usato per impostare la durata di una sessione
 import credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
 import json # usato per manipolare i json (esempio last codice utente)
+from random import randint
 
 server = Flask(__name__)
 
@@ -71,7 +72,7 @@ def register():
         if session.get('logged_in'):
             return redirect("https://storygram.it", code=302)
         else:
-            return render_template('registrazione.html')  # Redirect alla pagina di registrazione
+            return render_template('registrazione.html',codice=randint(1000000000,9999999999))  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         nome = request.form['Nome']
@@ -79,6 +80,9 @@ def register():
         password = request.form['Password']
         periodo_storico = request.form['PeriodoStorico']
         codice_di_recupero = request.form['CodiceDiRecupero']
+        codice_utente = request.form["codiceUtente"]
+
+        print(codice_utente)
 
         # Codifica la password in codice hash e il relativo codice di recupero
         password_hash = hashlib.sha256(password.encode()).hexdigest()
@@ -456,11 +460,12 @@ def messages():
     else:
             return jsonify({"message": "Utente non loggato"}), 401
 
-# ---------------- route per gestione messaggi ---------------------- #
+# ---------------- route per gestione delle storie ---------------------- #
 @server.route('/story/', methods=['GET', 'POST'])
 def story():
-    return render_template("story.html",codice="1234")
+    return render_template("story.html")
+
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=True, port=11023)
+    server.run(host='0.0.0.0',debug=True, port=80)
