@@ -1,7 +1,6 @@
-
 from flask import Flask, jsonify, request, render_template, redirect, session   # usato per flask
 from datetime import timedelta # usato per impostare la durata di una sessione
-import credentials # usato per importare credenziali utili
+import static.credentials as credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
@@ -17,7 +16,7 @@ server.config["DEBUG"] = True
 
 #   con questo comando impostiamo la durata di ogni sessione per 5 minuti
 #   (al termine di quest'ultimi la sessione verrà chiusa automaticamente)
-server.permanent_session_lifetime = timedelta(minutes=5)
+server.permanent_session_lifetime = timedelta(minutes=20)
 
 #   valore ripreso da un file esterno
 #   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
@@ -80,9 +79,9 @@ def register():
         password = request.form['Password']
         periodo_storico = request.form['PeriodoStorico']
         codice_di_recupero = request.form['CodiceDiRecupero']
-        codice_utente = request.form["codiceUtente"]
+        #codice_utente = request.form["codiceUtente"]
 
-        print(codice_utente)
+        print(request.form)
 
         # Codifica la password in codice hash e il relativo codice di recupero
         password_hash = hashlib.sha256(password.encode()).hexdigest()

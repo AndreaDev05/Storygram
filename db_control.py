@@ -1,6 +1,6 @@
 from flask import jsonify
 import pymysql
-import credentials
+import static.credentials as credentials
 
 # funzione per eseguire una query su database
 def executeQuery(query):
