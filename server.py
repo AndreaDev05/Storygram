@@ -117,6 +117,56 @@ def register():
         except:
             #executeQuery("ROLLBACK") # serve anche se da errore o il dbms fa il rollback in automatico ??????
             return jsonify({"message": "Errore interno al server. Riprovare più tardi"}), 500
+
+# --------------- route il recuepro della passowrd ---------------------- #
+@server.route('/recovery/', methods=['GET', 'POST'])
+def recovery():
+    if request.method == 'GET':
+            return render_template('recupero.html')
+    elif request.method == 'POST':
+        # Recupera i dati inviati dal form
+        codice_utente = request.form['CodiceUtente']
+        codice_di_recupero = request.form['CodiceDiRecupero']
+
+        # codifico in hash il codice di recupero e lo ocnfronto con quello alvato nel db
+        codice_di_recupero_hash = hashlib.sha256(codice_di_recupero.encode()).hexdigest()
+        query = f"SELECT * FROM Utente WHERE CodiceUtente = {codice_utente} AND CodiceDiRecupero = '{codice_di_recupero_hash}' LIMIT 1"
+        risp = executeQuery(query)
+
+        # Se l'utente esiste e il codice di recupero è corretto permetto il reset della passowrd e avvio una sessione per permettere il cambio passowrd
+        if risp:
+            session['CodiceUtente'] = risp[0]['CodiceUtente']
+            return redirect("/recovery/reset/", code=302)
+        else:
+            return jsonify({"message": "Codice utente o codice di recupero non corretti"}), 400
+
+@server.route('/recovery/reset/', methods=['GET', 'POST'])
+def recovery_reset():
+    if session['CodiceUtente']:
+        if request.method == 'GET':
+            return render_template('reset_password.html')
+        elif request.method == 'POST':
+            # Recupera i dati inviati dal form
+            nuova_password = request.form['NuovaPassword']
+            nuova_password_conferma = request.form['NuovaPasswordConferma']
+
+            # controllo se le due password sono uguali 
+            if nuova_password == nuova_password_conferma:
+                # codifico la nuova passowrd in hash
+                nuova_password_hash = hashlib.sha256(nuova_password.encode()).hexdigest()
+                # eseguo la query per resettare la passowrd
+                query = f"UPDATE Utente SET Password = '{nuova_password_hash}' WHERE CodiceUtente = '{session['CodiceUtente']}'"
+                executeQuery(query)
+                # elimino la sessione
+                session.clear()
+                # reindirizzo alla pagina di login
+                return redirect("/login/", code=302)
+            else:
+                return jsonify({"message": "Le due password non coincidono"}), 400
+        else:
+                return redirect("metodo non consentito", code=405)
+    else:
+        return redirect("Utente non loggatto", code=401)
         
 # ---------------- route per effettuare il logout ---------------------- #
 @server.route('/logout/', methods=["GET"])
