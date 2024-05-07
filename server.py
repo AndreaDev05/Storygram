@@ -459,4 +459,4 @@ def messages():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=True, port=8080)
+    server.run(host='0.0.0.0',debug=True, port=11023)

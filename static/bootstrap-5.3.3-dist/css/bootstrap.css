@@ -10016,6 +10016,15 @@ textarea.form-control-lg {
   body:has(div.post-user) .content{
     width: 87.19vw;
   }
+  .desc-title{
+    font-size: 20px !important;
+  }
+  .desc-text{
+    font-size: 18px !important;
+  }
+  .title-post{
+    font-size: 28px !important;  
+  }
 }
 
 @media(max-width: 760px){
