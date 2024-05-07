@@ -456,6 +456,10 @@ def messages():
     else:
             return jsonify({"message": "Utente non loggato"}), 401
 
+# ---------------- route per gestione messaggi ---------------------- #
+@server.route('/story/', methods=['GET', 'POST'])
+def story():
+    return render_template("story.html",codice="1234")
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug

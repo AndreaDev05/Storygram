@@ -32,4 +32,11 @@ Registrazione
   <button class="btn widget-btn form-btn" type="submit">Registrati</button>
 </form>
 
+<script>
+  $(document).ready(function(){
+    $("button").on("click",function(){
+      alert("Il tuo codeice utente è: ",{{ codice }});
+    })
+  });
+</script>
 {% endblock %}
