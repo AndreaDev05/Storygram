@@ -226,8 +226,11 @@ def profile(id):
                 posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
                 user_posts = executeQuery(posts_query)
                 print(user_posts)
-                
-                return render_template('profile.html', ID=id, is_owner=True, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+
+                # cerco se l'utente richiesto è richiesto dal proprietario o no
+                is_owner = True if(id == session["IDUtente"]) else False
+
+                return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
             
             return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
 
