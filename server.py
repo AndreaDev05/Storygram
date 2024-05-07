@@ -36,7 +36,7 @@ def home():
 def login():
     if request.method == "GET":
         if session.get('logged_in'):
-            return redirect("http://storygram.it", code=302)
+            return redirect("https://storygram.it", code=302)
         else:
             return render_template('login.html')
     if request.method == "POST":
@@ -57,7 +57,7 @@ def login():
             session['logged_in'] = True
             session['IDUtente'] = risp[0]['IDUtente']
 
-            return redirect("http://storygram.it", code=302)
+            return redirect("https://storygram.it", code=302)
         else:                                                           
             return render_template("login.html")
 
@@ -69,7 +69,7 @@ def login():
 def register():
     if request.method == 'GET':
         if session.get('logged_in'):
-            return redirect("http://storygram.it", code=302)
+            return redirect("https://storygram.it", code=302)
         else:
             return render_template('registrazione.html')  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
@@ -338,10 +338,29 @@ def trending():
 # ---------------- route per ricercare un utente ---------------------- #
 @server.route('/search/', methods=['POST'])
 def search():
-    print(request.form)
+    if session['logged_in'] == True:
+        if request.method == 'POST':
+            # Prende i dati dal form
+            search_text = request.form.get('ricerca')
 
+            # Query per ottenere i dati dell'utente
+            query = f'''
+                        SELECT *
+                        FROM Utente U
+                        JOIN Profilo P ON U.IDUtente = P.IDProfilo
+                        WHERE U.Cognome LIKE '%{search_text}%'
+                            OR U.Nome LIKE '%{search_text}%'
+                            OR U.PeriodoStorico LIKE '%{search_text}%'
+                            OR P.Descrizione LIKE '%{search_text}%';
+                    '''
+            search_results = executeQuery(query)
 
-
+            # invio risultato della ricerca 
+            return jsonify({"message": "Risultati ricerca", "search_results": search_results}), 200 # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return jsonify({"message": "Utente non loggato"}), 401 # !!  pagina poi da definire !!
     
 # ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
 @server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
@@ -440,4 +459,4 @@ def messages():
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug
-    server.run(host='0.0.0.0',debug=True, port=11023)
+    server.run(host='0.0.0.0',debug=True, port=8080)
