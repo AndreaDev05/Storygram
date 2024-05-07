@@ -10120,6 +10120,15 @@ textarea.form-control-lg {
     align-items: baseline;
     padding-top: 2.5rem;
   }
+  .desc-title{
+    font-size: 16px !important;
+  }
+  .desc-text{
+    font-size: 12px !important;
+  }
+  .title-post{
+    font-size: 24px !important;  
+  }
 }
 
 @media (min-width: 768px) {
