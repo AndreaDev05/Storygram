@@ -79,9 +79,7 @@ def register():
         password = request.form['Password']
         periodo_storico = request.form['PeriodoStorico']
         codice_di_recupero = request.form['CodiceDiRecupero']
-        #codice_utente = request.form["codiceUtente"]
-
-        print(request.form)
+        codice_utente = request.form['codiceUtente']    #DA INSERIRE NEL DATABASE
 
         # Codifica la password in codice hash e il relativo codice di recupero
         password_hash = hashlib.sha256(password.encode()).hexdigest()
