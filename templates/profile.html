@@ -3,26 +3,29 @@
 
 {% block content %}
 
-
+<!-- div per la visualizzaizone di un profilo-->
 <div class="row info-user">
+    <!-- div per contenere l'immaigne del profilo-->
     <div class="col-4 profile-image" >
         <img class="story-user-icon-profile" src="" alt="profile_picture">
     </div>
     <div class="col-8">
         <div class="row h-50">
+            <!-- div dove viene visualizzato il nome dell'utente -->
             <div class="col profile-data nome-lg">
                 {{ nomeUtente }}
             </div>
+            <!-- div dove vengono visualizzate i dati generali del profilo  -->
             <div class="col profile-data align-self-end align-self-sm-center">
-                <span class="numero-dati">
-                    {{numeroDiPost}}
+                <span class="numero-dati">  <!-- numero di post dell'utente -->
+                    {{numeroDiPost}} 
                 </span><br>
                 <span class="tipo-dati">
                     Post
                 </span>
             </div>
             <div class="col profile-data align-self-end align-self-sm-center">
-                <span class="numero-dati">
+                <span class="numero-dati"> <!-- numero di seguaci dell'utente -->
                     {{seguaci}}
                 </span><br>
                 <span class="tipo-dati">
@@ -30,7 +33,7 @@
                 </span>
             </div>
             <div class="col profile-data align-self-end align-self-sm-center">
-                <span class="numero-dati">
+                <span class="numero-dati"> <!-- numero di seguiti dell'utente-->
                     {{seguiti}}
                 </span><br>
                 <span class="tipo-dati">
@@ -39,18 +42,20 @@
             </div>
         </div>
         <div class="row h-50">
+            <!-- a seocnda se il profilo visuallizzato è proprio o di qualcuno, rendo visibili i giusti pulsanti -->
             <div class="col profile-data flex-row">
                 <input type="hidden"  id="c1" name="IDUtente" value="{{ ID }}">
                 {% if is_owner == True %}
-                <button class="btn widget-btn profile-btn">Modifica</button>
+                <button class="btn widget-btn profile-btn">Modifica</button> <!-- se sono il proprietario mostro il pulsante per modificare il profilo-->
                 {% else %}
-                <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button>
+                <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button> <!-- se non sono il proprietario mostro il pulsante per seguire l'utente-->
                 {% endif %}
-                <button class="btn widget-btn profile-btn">Messaggi</button>
+                <button class="btn widget-btn profile-btn">Messaggi</button> <!-- mostro il pulsante per i messaggi-->
             </div>
         </div>
     </div>
 </div>
+<!-- dive per contenere la descrizione del profilo -->
 <div class="row desc-user px-5 px-sm-0">
     <label class="desc-title" for="#desc">
         <b>Descrizione</b>
@@ -60,6 +65,7 @@
     </pre>
     
 </div>
+<!-- div per contenere tutti i post del profilo -->
 <div class="row post-user">
     <label class="title-post" for=""><b>POST</b></label>
 </div>
