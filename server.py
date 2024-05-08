@@ -205,36 +205,54 @@ def create_post():
 @server.route('/profile/<int:id>/', methods=['GET'])
 def profile(id):
     if session.get('logged_in') == True:
-        if request.method == 'GET':
-            # Verifica se l'utente corrente è il proprietario del profilo o lo sta seguendo
-            is_owner_or_following = session['IDUtente'] == id or is_following(session['IDUtente'], id)
-            
-            # Query per recuperare informazioni sul profilo dell'utente
-            profile_query = f"SELECT Nome, Cognome, Descrizione, NumeroDiPost, PathImmagineProfilo, Seguaci, Seguiti, Privacy FROM Profilo WHERE IDProfilo = {id};"
-            profile_info = executeQuery(profile_query)
-            
-            # Controlla se il profilo è privato
-            is_private = profile_info[0]['Privacy'] == 1 
+         
+        # Verifica se l'utente corrente è il proprietario del profilo o lo sta seguendo
+        is_owner_or_following = session['IDUtente'] == id or is_following(session['IDUtente'], id)
+        
+        # Query per recuperare informazioni sul profilo dell'utente
+        profile_query = f"SELECT Nome, Cognome, Descrizione, NumeroDiPost, PathImmagineProfilo, Seguaci, Seguiti, Privacy FROM Profilo WHERE IDProfilo = {id};"
+        profile_info = executeQuery(profile_query)
+        
+        # Controlla se il profilo è privato
+        is_private = profile_info[0]['Privacy'] == 1 
 
-            # Se il profilo è privato e l'utente non è il proprietario né lo sta seguendo, restituisci solo un messaggio di profilo privato
-            if is_private and not is_owner_or_following:
-                return jsonify({"message": "Profilo privato"}), 200
+        # Se il profilo è privato e l'utente non è il proprietario né lo sta seguendo, restituisci solo un messaggio di profilo privato
+        if is_private and not is_owner_or_following:
+            return jsonify({"message": "Profilo privato"}), 200
+        
+        # Recupera i post solo se il profilo è pubblico o se l'utente è il proprietario o lo sta seguendo
+        if not is_private or is_owner_or_following:
             
-            # Recupera i post solo se il profilo è pubblico o se l'utente è il proprietario o lo sta seguendo
-            if not is_private or is_owner_or_following:
-                
-                posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
-                user_posts = executeQuery(posts_query)
-                print(user_posts)
+            posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
+            user_posts = executeQuery(posts_query)
+            print(user_posts)
 
-                # cerco se l'utente richiesto è richiesto dal proprietario o no
-                is_owner = True if(id == session["IDUtente"]) else False
+            # cerco se l'utente richiesto è richiesto dal proprietario o no
+            is_owner = True if(id == session["IDUtente"]) else False
 
-                return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+            return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+        
+        return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
+
+    else:
+        return redirect("http://storygram.it/login/", code=302)
+
+@server.route('/profile/<int:id>/modify', methods=['GET', 'POST'])
+def modifica_profilo(id):
+    if session.get('logged_in') == True:
+        if request.method == "GET":
+
+            profile_info = executeQuery(f"SELECT * FROM Profilo JOIN Utente ON (IDutente = IDProfilo) WHERE IDProfilo = {id}")[0] # metto posizione 0 perche "id" è chiave primaria quindi sono sicuro di avere un solo record
+            is_owner = True if(id == session["IDUtente"]) else False
             
-            return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
+            if is_owner:
+                return render_template("profile_modifica.html", ID=id, nome=profile_info['Nome'], cognome=profile_info['Cognome'], descrizione=profile_info['Descrizione'], pathImmagineProfilo=profile_info['PathImmagineProfilo'], privacy=profile_info['Privacy'], periodoStorico=profile_info['PeriodoStorico'])
+            else:
+                return jsonify({"message": "Forbidden"}), 403  # da definire poi !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        return jsonify({"message": "Metodo non consentito"}), 405
+        else:
+            pass
+            # mi aspetto dei dati da inserire nel db aggiornando i parametri del profilo
     else:
         return redirect("http://storygram.it/login/", code=302)
 
@@ -242,17 +260,17 @@ def profile(id):
 @server.route('/profile/<int:id>/followers/', methods=['GET'])
 def followers(id):
     if session.get('logged_in') == True:
-        if request.method == 'GET':
-            # Recupera i follower del profilo
-            query = f"""
-                    SELECT Profilo.*
-                    FROM Profilo
-                    INNER JOIN Segue ON Profilo.IDProfilo = Segue.Seguace
-                    WHERE Segue.Seguito = {id};
-            """
-            followers_info = executeQuery(query)
-            return render_template('followers.html', followers=followers_info)
-        return jsonify({"message": "Metodo non consentito"}), 405
+        
+        # Recupera i follower del profilo
+        query = f"""
+                SELECT Profilo.*
+                FROM Profilo
+                INNER JOIN Segue ON Profilo.IDProfilo = Segue.Seguace
+                WHERE Segue.Seguito = {id};
+        """
+        followers_info = executeQuery(query)
+        return render_template('followers.html', followers=followers_info)
+        
     else:
         return redirect("http://storygram.it/login/", code=302)
 

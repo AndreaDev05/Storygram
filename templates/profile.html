@@ -46,7 +46,7 @@
             <div class="col profile-data flex-row">
                 <input type="hidden"  id="c1" name="IDUtente" value="{{ ID }}">
                 {% if is_owner == True %}
-                <button class="btn widget-btn profile-btn">Modifica</button> <!-- se sono il proprietario mostro il pulsante per modificare il profilo-->
+                <button class="btn widget-btn profile-btn" onclick="modificaprofilo()">Modifica</button> <!-- se sono il proprietario mostro il pulsante per modificare il profilo-->
                 {% else %}
                 <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button> <!-- se non sono il proprietario mostro il pulsante per seguire l'utente-->
                 {% endif %}

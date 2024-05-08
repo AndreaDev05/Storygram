@@ -127,6 +127,10 @@
                 valore = Document.getElementById("c1").value
                 window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
             }
+
+            function modificaprofilo(){
+                window.location.href="{{url_for('modifica_profilo', id=ID)}}"
+            }
         </script>
     </body>
 </html>
