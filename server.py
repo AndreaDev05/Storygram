@@ -447,13 +447,18 @@ def messages():
             return redirect("http://storygram.it/login/", code=302)
 
 # ---------------- route per gestione delle storie ---------------------- #
-@server.route('/story/', methods=['GET', 'POST'])
+@server.route('/story/<int:id>', methods=['GET', 'POST'])
 def story():
     if(session.get("logged_in")):
         if request.method == 'GET':
-            return render_template("story.html") # !!  pagina poi da definire !!
-        elif request.method == 'POST':
-            return render_template("story.html") # !!  pagina poi da definire !!
+            # Recupero i dati della storia (se non sono passate 24 ore)
+            query= f'''
+                    SELECT * FROM Storia
+                    WHERE IDStoria = {id}
+                    AND Data >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            '''
+            story = executeQuery(query)
+            return render_template("story.html", story=story) # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
