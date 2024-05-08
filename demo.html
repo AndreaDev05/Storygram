@@ -106,12 +106,45 @@
 						</a>
 					</section>
 					<section>
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
+						<h2>Scritto Con Flask</h2>
+						<p>micro-framework Web scritto in Python, basato sullo strumento Werkzeug WSGI e con il motore di template Jinja2</p>
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="|4,8-11|17|22-24">
+							server = Flask(__name__)
+
+							# set del timeout della sessione 
+							server.permanent_session_lifetime = timedelta(minutes=20)
+
+							#   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
+							server.secret_key = credentials.chiave_segreta
+							
+							# gestione del sito web tramite route 
+							@server.route('/')
+							def home():
+								if session.get('logged_in'):
+									return render_template("home.html")
+								else:
+									return render_template('login.html')  
+
+							if __name__ == "__main__":
+								# avvio dell'applicaizone web
+								server.run(host='0.0.0.0',debug=False, port=80)
+						</code></pre>
 					</section>
 					<section>
-						<h2>Basement Level 2</h2>
-						<p>That's it, time to go back up.</p>
+						<h2>creazione di un nuovo utente</h2>
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="|4,8-11|17|22-24">
+							import os
+
+							# funzione per creare la cartella dedicata al nuovo utente al momento della registrazione 
+							def creaCartella(IDUtente):
+								try:
+									IDUtente_str = str(IDUtente) # traformo il codice dell'utente in una stringa
+									current = os.getcwd() # recupero la directory di lavoro dove creerò la cartella dedicata al nuovo utente 
+									os.makedirs(os.path.join(current, "utenti", IDUtente_str, "media"))  # cartella per i media in generale (post/storie)
+									os.makedirs(os.path.join(current, "utenti", IDUtente_str, "ImmagineProfilo")) # cartella per l'immagine profilo dell'utente
+								except Exception as e:
+									print(e)
+						</code></pre>
 						<br>
 						<a href="#/2">
 							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
