@@ -7,7 +7,7 @@ CREATE TABLE Utente (
     );
 
 CREATE TABLE Profilo (
-    IDProfilo int PRIMARY KEY,
+    IDProfilo int PRIMARY KEY AUTO_INCREMENT,
     Nome varchar(25) NOT NULL,
     Cognome varchar(25) NOT NULL,
     Descrizione text(200) NOT NULL DEFAULT "",
@@ -39,7 +39,7 @@ CREATE TABLE Segue (
     );
 
 CREATE TABLE Post (
-    IDPost int PRIMARY KEY,
+    IDPost int PRIMARY KEY AUTO_INCREMENT,
     Descrizione text(200) NOT NULL DEFAULT "",
     Data date NOT NULL,
     PercorsoFile varchar(100) NOT NULL,
