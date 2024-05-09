@@ -3,6 +3,7 @@ from datetime import timedelta # usato per impostare la durata di una sessione
 import static.credentials as credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
+from scriptUpload import uploadImmaggineProfilo # usato per uplodare nel server le immaigni profilo degli utenti 
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
 import json # usato per manipolare i json (esempio last codice utente)
 from random import randint
@@ -237,6 +238,7 @@ def profile(id):
     else:
         return redirect("http://storygram.it/login/", code=302)
 
+# ---------------- route per la modifica del profilo ---------------------- #
 @server.route('/profile/<int:id>/modify', methods=['GET', 'POST'])
 def modifica_profilo(id):
     if session.get('logged_in') == True:
@@ -246,16 +248,22 @@ def modifica_profilo(id):
             is_owner = True if(id == session["IDUtente"]) else False
             
             if is_owner:
+                print(profile_info['PathImmagineProfilo'])
                 return render_template("profile_modifica.html", ID=id, nome=profile_info['Nome'], cognome=profile_info['Cognome'], descrizione=profile_info['Descrizione'], pathImmagineProfilo=profile_info['PathImmagineProfilo'], privacy=profile_info['Privacy'], periodoStorico=profile_info['PeriodoStorico'])
             else:
                 return jsonify({"message": "Forbidden"}), 403  # da definire poi !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         else:
 
+            # eseguo l'upload della foto profilo
+            file = request.files['file']
+            newpath = uploadImmaggineProfilo(file,server,session)
+            print(newpath)
+
             try:
                 executeQuery("START TRANSACTION")
-                executeQuery(f"UPDATE Profilo SET Nome = '{request.form['Nome']}', Cognome = '{request.form['Cognome']}', Descrizione = '{request.form['Descrizione']}' WHERE IDProfilo = '{id}'")
-                executeQuery(f"UPDATE Utente SET PeriodoStorico = '{request.form['PStorico']}' WHERE IDProfilo = '{id}'")
+                executeQuery(f"UPDATE Profilo SET Nome = '{request.form['Nome']}', Cognome = '{request.form['Cognome']}', PathImmagineProfilo = '{newpath}', Descrizione = '{request.form['Descrizione']}' WHERE IDProfilo = '{id}'")
+                executeQuery(f"UPDATE Utente SET PeriodoStorico = '{request.form['PStorico']}' WHERE IDUtente = '{id}'")
                 executeQuery("COMMIT")
             except:
                 executeQuery("ROLLBACK")

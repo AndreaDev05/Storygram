@@ -7,7 +7,7 @@
     <h3>Modifica Profilo...</h3>
 
     <table align="center" style="margin-top:30px">
-        <form action="{{url_for('modifica_profilo', id=ID)}}" method="POST">
+        <form action="{{url_for('modifica_profilo', id=ID)}}" method="POST" enctype=multipart/form-data>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="Nome">Nome:</label> </td>
                 <td> <input type="text" name="Nome" required value="{{nome}}"> </td>
@@ -26,7 +26,7 @@
             </tr>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="ImmagineNuova">Seleziona File:</label> </td>
-                <td> <input type="file"> </td>
+                <td> <input type="file" name="file"> </td>
             </tr>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="PStorico">Periodo Storico:</label> </td>
