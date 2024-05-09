@@ -9,3 +9,16 @@
 -->
 
 {% endblock %}
+
+{% block content %}
+
+{% for post in lista_post %}
+<div class="box">
+    <img src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="10%"> <p style="display:inline-block">{{post["Nome"]}}</p> <p style="display:inline-block"> </p> <p style="display:inline-block">{{post["Cognome"]}}</p>
+    <hr>
+    <img src="{{post['PercorsoFile']}}" alt="imm_post" width="50%"> <br>
+    <p style="display:inline-block"> {{post["Descrizione"]}} </p>
+</div>
+{% endfor %}
+
+{% endblock%}

@@ -3,7 +3,7 @@ from datetime import timedelta # usato per impostare la durata di una sessione
 import static.credentials as credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
-from scriptUpload import uploadImmaggineProfilo # usato per uplodare nel server le immaigni profilo degli utenti 
+from scriptUpload import uploadImmagineProfilo, uploadImmaginePost # usato per uplodare nel server le immaigni profilo degli utenti 
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
 import json # usato per manipolare i json (esempio last codice utente)
 from random import randint
@@ -17,7 +17,7 @@ server.config["DEBUG"] = True
 
 #   con questo comando impostiamo la durata di ogni sessione per 5 minuti
 #   (al termine di quest'ultimi la sessione verrà chiusa automaticamente)
-server.permanent_session_lifetime = timedelta(minutes=20)
+server.permanent_session_lifetime = timedelta(weeks=1)
 
 #   valore ripreso da un file esterno
 #   imposto una chiave segreta per l'invio di cookie crittati da Flask al browser
@@ -28,7 +28,10 @@ server.secret_key = credentials.chiave_segreta
 @server.route('/')
 def home():
     if session.get('logged_in'):
-        return render_template("home.html", ID=session['IDUtente'], names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+
+        post_e_profilo = executeQuery("SELECT * FROM Post JOIN Profilo ON (Post.IDProfiloProvenienza = Profilo.IDProfilo) ORDER BY Data")
+        print(post_e_profilo)
+        return render_template("home.html", ID=session['IDUtente'], lista_post=post_e_profilo, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')  
 
@@ -64,7 +67,7 @@ def login():
 
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
-        
+
 # ---------------- route per la registrazione ---------------------- #
 @server.route('/register/', methods=['GET', 'POST'])
 def register():
@@ -72,7 +75,12 @@ def register():
         if session.get('logged_in'):
             return redirect("https://storygram.it", code=302)
         else:
-            return render_template('registrazione.html',codice=randint(1000000000,9999999999))  # Redirect alla pagina di registrazione
+            UltimoCodiceUtente = None
+            with open("permanent_data/UltimoCodiceUtente.json", "r") as file:
+                diz = json.load(file)
+                UltimoCodiceUtente = diz["UltimoCodiceUtente"] + 1
+                file.close()
+            return render_template('registrazione.html',codice=UltimoCodiceUtente)  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         nome = request.form['Nome']
@@ -177,31 +185,6 @@ def logout():
     else:
         return redirect("http://storygram.it/login/", code=302)
 
-# ---------------- route per la creazione di un nuovo post ---------------------- #
-@server.route('/post/create/', methods=['GET', 'POST'])
-def create_post():
-    if session['logged_in'] == True:
-        if request.method == 'POST':
-            # prendo i dati del form
-            descrizione = request.form['descrizione']
-            percorso_file = request.form['percorso_file']
-
-            # inserisco le informazioni del nuovo post nel db
-            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '{percorso_file}', {session['codiceUtente']})"
-            executeQuery(query)
-
-            # aggiorno l'applicaizone e rindirizzo alla pagina principale 
-            return jsonify({"message": "post creato con successo"}), 200 # !!  pagina poi da definire !!
-        
-        elif request.method == 'GET':
-            # carico la pagina per la creazione di un nuovo post 
-            return jsonify({"message": "pagina creazione post"}), 200 # !!  pagina poi da definire !!
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
-    else:
-        return redirect("http://storygram.it/login/", code=302)
-
-
 # ---------------- route per la visualizzare un profilo ---------------------- #
 @server.route('/profile/<int:id>/', methods=['GET'])
 def profile(id):
@@ -257,12 +240,12 @@ def modifica_profilo(id):
 
             # eseguo l'upload della foto profilo
             file = request.files['file']
-            newpath = uploadImmaggineProfilo(file,server,session)
+            newpath = uploadImmagineProfilo(file,server,session)
             print(newpath)
 
             try:
                 executeQuery("START TRANSACTION")
-                executeQuery(f"UPDATE Profilo SET Nome = '{request.form['Nome']}', Cognome = '{request.form['Cognome']}', PathImmagineProfilo = '{newpath}', Descrizione = '{request.form['Descrizione']}' WHERE IDProfilo = '{id}'")
+                executeQuery(f"UPDATE Profilo SET Nome = '{request.form['Nome']}', Cognome = '{request.form['Cognome']}', PathImmagineProfilo = '/{newpath}', Descrizione = '{request.form['Descrizione']}' WHERE IDProfilo = '{id}'")
                 executeQuery(f"UPDATE Utente SET PeriodoStorico = '{request.form['PStorico']}' WHERE IDUtente = '{id}'")
                 executeQuery("COMMIT")
             except:
@@ -309,31 +292,7 @@ def following(id):
         return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return redirect("http://storygram.it/login/", code=302)
-        
-# ---------------- route per modificare il profilo e le varie impsotazioni ---------------------- #
-@server.route('/settings/', methods=['GET', 'POST'])
-def settings():
-    if session['logged_in'] == True:
-        if request.method == 'GET':
-            # carico la pagina per la modifica delle impostazioni del profilo
-            return jsonify({"message": "pagina impostazioni"}), 200 # !!  pagina poi da definire !!
-        elif request.method == 'POST':
-            # Prende i dati dal form
-            pathImmagineProfilo = request.form.get('pathImmagineProfilo')
-            descrizione = request.form.get('descrizione')
-            privacy = request.form.get('privacy')
 
-            # Query per aggiornare le informazioni sul profilo dell'utente
-            query = f"UPDATE Profilo SET PathImmagineProfilo = '{pathImmagineProfilo}', Descrizione = '{descrizione}', Privacy = '{privacy}' WHERE IDProfilo = {session['codiceUtente']};"
-            
-            # Esegui l'aggiornamento nel database
-            executeQuery(query)
-            return jsonify({"message": "Impostazioni aggiornate"}), 200 # !!  pagina poi da definire !!
-
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
-    else:
-        return redirect("http://storygram.it/login/", code=401)
 
 # per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
 @server.route('/trending/', methods=['GET'])
@@ -383,6 +342,31 @@ def search():
 
             # invio risultato della ricerca 
             return jsonify({"message": "Risultati ricerca", "search_results": search_results}), 200 # !!  pagina poi da definire !!
+        else:
+            return jsonify({"message": "Metodo non consentito"}), 405
+    else:
+        return redirect("http://storygram.it/login/", code=302)
+    
+# ---------------- route per la creazione di un nuovo post ---------------------- #
+@server.route('/post/create/', methods=['GET', 'POST'])
+def create_post():
+    if session.get('logged_in') == True:
+        if request.method == 'POST':
+            # prendo i dati del form
+            descrizione = request.form['Descrizione']
+            file = request.files['file_post']
+            newpath = uploadImmaginePost(file,server,session)
+
+            # inserisco le informazioni del nuovo post nel db
+            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '/{newpath}', {session['IDUtente']})"
+            executeQuery(query)
+
+            # aggiorno l'applicaizone e rindirizzo alla pagina principale 
+            return redirect("http://storygram.it/", code=302)
+        
+        elif request.method == 'GET':
+            # carico la pagina per la creazione di un nuovo post 
+            return render_template("post_create.html", ID=session["IDUtente"])
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
@@ -500,7 +484,6 @@ def story():
     else:
         return redirect("http://storygram.it/login/", code=302)
 
-
 # ---------------- route per gestione del bottone per seguire ---------------------- #
 @server.route('/segui/<int:id_profilo_da_seguire>', methods=['GET', 'POST'])
 def segui(id_profilo_da_seguire):
@@ -509,7 +492,6 @@ def segui(id_profilo_da_seguire):
         render_template("profile.html") # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! variabili del template non passate nella funzione
     else:
         return redirect("http://storygram.it/login/", code=302)
-
 
 if __name__ == "__main__":
 

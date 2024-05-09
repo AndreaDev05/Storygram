@@ -12513,6 +12513,12 @@ textarea.form-control-lg {
   height: 150px;
 }
 
+#descrizione_post {
+  resize: none;
+  width: 300px;
+  height: 100px;
+}
+
 .switch {
   position: relative;
   display: inline-block;

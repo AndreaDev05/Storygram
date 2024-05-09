@@ -10,7 +10,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def uploadImmaggineProfilo(file, server, session):
+def uploadImmagineProfilo(file, server, session):
     
     print("debug")
     server.config['UPLOAD_FOLDER'] = f"static/utenti/{session['IDUtente']}/ImmagineProfilo" # imposto la cartella di upload per l'immagine profilo
@@ -22,6 +22,18 @@ def uploadImmaggineProfilo(file, server, session):
     if file and allowed_file(file.filename): # se è stato caricato il file lo carico della giusta cartella 
         print(f'File caricato: {file.filename}') # debug 
         filename = secure_filename(file.filename)
-        file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
+        file.save("./" + os.path.join(server.config['UPLOAD_FOLDER'], filename))
         return  os.path.join(server.config['UPLOAD_FOLDER'], filename) # ritorno il path dell'immagine profilo poi da aggiornare nel db 
+
+def uploadImmaginePost(file, server, session):
     
+    server.config['UPLOAD_FOLDER'] = f"static/utenti/{session['IDUtente']}/media"
+
+    if file.filename == '':
+        print('Nessun file Selezionato') # debug
+        return jsonify({'error': 'Nessun file Selezionato'}), 400
+    if file and allowed_file(file.filename): # se è stato caricato il file lo carico della giusta cartella 
+        print(f'File caricato: {file.filename}') # debug 
+        filename = secure_filename(file.filename)
+        file.save("./" + os.path.join(server.config['UPLOAD_FOLDER'], filename))
+        return  os.path.join(server.config['UPLOAD_FOLDER'], filename)

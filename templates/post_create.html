@@ -1,0 +1,26 @@
+{% extends "layout_base.html" %}
+
+{% block content %}
+
+<div class="box">
+    <form action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data">
+        <table align="center">
+            <tr>
+                <td><label for="Descrizione">Descrizione Post: </label></td>
+                <td><textarea type="text" name="Descrizione" id="descrizione_post"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="file_post">Immagine: </label></td>
+                <td><input type="file" name="file_post"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="float: right" class="mt-3">
+                    <button class="btn btn-primary btn-sm" type="submit">Conferma</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+{% endblock %}
