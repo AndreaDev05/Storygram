@@ -68,7 +68,7 @@
                     <span class="text-sidebar">Cerca</span>
                 </button>
                 <!-- bottone per redirect alla pagina di creazione post-->
-                <button type="button" class="btn btn-sidebar" role="button">
+                <button type="button" class="btn btn-sidebar" role="button" onclick="crea()">
                     <span class="icon-sidebar">
                         <img class="add-icon" src="" width="24px" height="24px">
                     </span>
@@ -129,7 +129,11 @@
             }
 
             function modificaprofilo(){
-                window.location.href="{{url_for('modifica_profilo', id=ID)}}"
+                window.location.href="{{url_for('modifica_profilo', id=ID)}}";
+            }
+
+            function crea(){
+                
             }
         </script>
     </body>

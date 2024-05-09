@@ -7,12 +7,12 @@
 <div class="row info-user">
     <!-- div per contenere l'immaigne del profilo-->
     <div class="col-4 profile-image" >
-        <img class="story-user-icon-profile" src="" alt="profile_picture">
+        <img src="{{pathImmagineProfilo}}" alt="profile_picture" style="width: 50%;">
     </div>
     <div class="col-8">
         <div class="row h-50">
             <!-- div dove viene visualizzato il nome dell'utente -->
-            <div class="col profile-data nome-lg">
+            <div class="col profile-data nome-lg" style="font-size: 25px;">
                 {{ nomeUtente }}
             </div>
             <!-- div dove vengono visualizzate i dati generali del profilo  -->
@@ -60,9 +60,9 @@
     <label class="desc-title" for="#desc">
         <b>Descrizione</b>
     </label>
-    <pre class="desc-text" id="desc">
+    <textarea class="desc-text" id="desc" readonly>
         {{descrizione}}
-    </pre>
+    </textarea>
     
 </div>
 <!-- div per contenere tutti i post del profilo -->

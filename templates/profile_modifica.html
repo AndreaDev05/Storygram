@@ -9,33 +9,37 @@
     <table align="center" style="margin-top:30px">
         <form action="{{url_for('modifica_profilo', id=ID)}}" method="POST">
             <tr>
-                <td style="border-right: 1px solid black"> <label for="Nome">Nome:</label> </td> <td> <input type="text" name="Nome" required value="{{nome}}"> </td>
+                <td style="border-right: 1px solid black"> <label for="Nome">Nome:</label> </td>
+                <td> <input type="text" name="Nome" required value="{{nome}}"> </td>
             </tr>
             <tr>
-                <td style="border-right: 1px solid black"> <label for="Cognome">Cognome:</label> </td> <td> <input type="text" name="Cognome" required value="{{cognome}}"> </td>
+                <td style="border-right: 1px solid black"> <label for="Cognome">Cognome:</label> </td>
+                <td> <input type="text" name="Cognome" required value="{{cognome}}"> </td>
             </tr>
             <tr>
-                <td style="border-right: 1px solid black"> <label for="Descrizione">Descrizione:</label> </td> <td> <textarea id="descrizione_modifica" type="text" name="Descrizione">{{descrizione}}</textarea> </td>
+                <td style="border-right: 1px solid black"> <label for="Descrizione">Descrizione:</label> </td>
+                <td> <textarea id="descrizione_modifica" type="text" name="Descrizione">{{descrizione}}</textarea> </td>
             </tr>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="ImmagineCorrente">Immagine Attuale:</label> </td>
-                <td> <img src="{{pathImmagineProfilo}}" alt="ALT_immagine_profilo_attuale"> </td>
+                <td> <img src="{{pathImmagineProfilo}}" alt="ALT_immagine_profilo_attuale" style="width: 50%;"> </td>
             </tr>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="ImmagineNuova">Seleziona File:</label> </td>
                 <td> <input type="file"> </td>
             </tr>
             <tr>
-                <td style="border-right: 1px solid black"> <label for="PStorico">Periodo Storico:</label> </td> <td> <input name="PStorico" type="text" max=100 required value="{{periodoStorico}}"> </td>
+                <td style="border-right: 1px solid black"> <label for="PStorico">Periodo Storico:</label> </td>
+                <td> <input name="PStorico" type="text" max=100 required value="{{periodoStorico}}"> </td>
             </tr>
             <tr>
                 <td style="border-right: 1px solid black"> <label for="Privacy">Profilo privato: </label> </td>
                 <td>
                     <label class="switch">
                         {% if privacy == 1 %}
-                        <input type="checkbox" checked>
+                        <input type="checkbox" name="Privacy" checked>
                         {% else %}
-                        <input type="checkbox">
+                        <input type="checkbox" name="Privacy">
                         {% endif %}
                         <span class="slider round"></span>
                     </label>

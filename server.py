@@ -230,7 +230,7 @@ def profile(id):
             # cerco se l'utente richiesto è richiesto dal proprietario o no
             is_owner = True if(id == session["IDUtente"]) else False
 
-            return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+            return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + " " + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
         
         return jsonify({"message": "Profilo privato"}), 200 # !!  pagina poi da definire !!
 
@@ -251,7 +251,17 @@ def modifica_profilo(id):
                 return jsonify({"message": "Forbidden"}), 403  # da definire poi !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         else:
-            pass
+
+            try:
+                executeQuery("START TRANSACTION")
+                executeQuery(f"UPDATE Profilo SET Nome = '{request.form['Nome']}', Cognome = '{request.form['Cognome']}', Descrizione = '{request.form['Descrizione']}' WHERE IDProfilo = '{id}'")
+                executeQuery(f"UPDATE Utente SET PeriodoStorico = '{request.form['PStorico']}' WHERE IDProfilo = '{id}'")
+                executeQuery("COMMIT")
+            except:
+                executeQuery("ROLLBACK")
+            
+            return redirect(f"http://storygram.it/profile/{id}", code=302)
+      
             # mi aspetto dei dati da inserire nel db aggiornando i parametri del profilo
     else:
         return redirect("http://storygram.it/login/", code=302)
