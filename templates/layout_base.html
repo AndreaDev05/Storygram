@@ -28,12 +28,11 @@
         <title> STORYGRAM </title>
     </head>
     <body>
-        <div class="row vh-100 m-auto d-flex flex-row-reverse justify-content-start">
+        <div class="row vh-100 m-auto d-flex flex-row-reverse">
             <span class="nome-utente d-none fixed-top"> <!-- nome dell'utente -->
                 <b>{{ nomeUtente }}</b>
-                <b>Nome utente</b>
             </span>
-            <div class="col-lg col-sm main-col stories pt-sm-6">
+            <div class="col main-col stories pt-sm-6">
                 
                 {% block rightside %}
                 {% endblock %}
@@ -105,6 +104,8 @@
                     $(".btn-sidebar").removeClass("selected");
                     $(this).addClass("selected");
                 })
+
+                
             });
 
             // per il redirect alla pagina home 
@@ -136,5 +137,7 @@
                 window.location.href="{{url_for('create_post')}}"
             }
         </script>
+        {% block script %}
+        {% endblock %}
     </body>
 </html>

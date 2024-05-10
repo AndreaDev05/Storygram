@@ -11,14 +11,32 @@
 {% endblock %}
 
 {% block content %}
-
-{% for post in lista_post %}
-<div class="box">
-    <img src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="10%"> <p style="display:inline-block">{{post["Nome"]}}</p> <p style="display:inline-block"> </p> <p style="display:inline-block">{{post["Cognome"]}}</p>
-    <hr>
-    <img src="{{post['PercorsoFile']}}" alt="imm_post" width="50%"> <br>
-    <p style="display:inline-block"> {{post["Descrizione"]}} </p>
+<div class="box-posts pt-sm-6 overflow-auto">
+    {% for post in lista_post %}
+    <div class="post">
+        <div class="profile-info-post-box">
+            <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
+            <p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p>
+        </div>
+        <div class="img-post-box">
+            <img src="{{post['PercorsoFile']}}" alt="imm_post">
+        </div>
+        <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
+        <div class="action-icon">
+            <img class="heart-icon me-3" src alt="img-like">
+            <img class="comment-icon" src alt="img-comment">
+        </div>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
+{% endblock%}
+
+{% block script %}
+
+<script>
+    $(".heart-icon").on("click", function(){
+        $(this).toggleClass("liked");
+    });
+</script>
 
 {% endblock%}

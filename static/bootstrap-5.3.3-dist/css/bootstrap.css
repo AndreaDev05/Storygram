@@ -62,6 +62,13 @@
   --url-icon-story-user-profile-mobile: url("../../icons/story_user_icon_profile_mobile_light.svg");
   --url-icon-story-user-profile-mobile-seen: url("../../icons/story_user_icon_profile_mobile_seen_light.svg");
 
+  --url-icon-heart: url("../../icons/heart_icon_light.svg");
+  --url-icon-heart-press: url("../../icons/heart_press_icon_light.svg");
+  --url-icon-heart-hover: url("../../icons/heart_hover_icon_light.svg");
+
+  --url-icon-comment: url("../../icons/comment_icon_light.svg");
+  --url-icon-comment-hover: url("../../icons/comment_hover_icon_light.svg");
+
 }
 
 [data-bs-theme=dark] {
@@ -117,6 +124,13 @@
 
   --url-icon-story-user-profile-mobile: url("../../icons/story_user_icon_profile_mobile_dark.svg");
   --url-icon-story-user-profile-mobile-seen: url("../../icons/story_user_icon_profile_mobile_seen_dark.svg");
+
+  --url-icon-heart: url("../../icons/heart_icon_dark.svg");
+  --url-icon-heart-press: url("../../icons/heart_press_icon_dark.svg");
+  --url-icon-heart-hover: url("../../icons/heart_hover_icon_dark.svg");
+
+  --url-icon-comment: url("../../icons/comment_icon_dark.svg");
+  --url-icon-comment-hover: url("../../icons/comment_hover_icon_dark.svg");
 }
 
 *,
@@ -3042,6 +3056,31 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
 }
 
+.heart-icon{
+  content: var(--url-icon-heart);
+  background-repeat: no-repeat;
+}
+
+.heart-icon:hover{
+  content: var(--url-icon-heart-hover);
+  background-repeat: no-repeat;
+}
+
+.heart-icon.liked{
+  content: var(--url-icon-heart-press);
+  background-repeat: no-repeat;
+}
+
+.comment-icon{
+  content: var(--url-icon-comment);
+  background-repeat: no-repeat;
+}
+
+.comment-icon:hover{
+  content: var(--url-icon-comment-hover);
+  background-repeat: no-repeat;
+}
+
 .icon-story{
   margin-right: 0.83vw
 }
@@ -3087,6 +3126,7 @@ textarea.form-control-lg {
   content: var(--url-icon-story-user-profile-seen);
   background-repeat: no-repeat;
 }
+
 
 .btn-sidebar.selected .home-icon{
   content: var(--url-icon-home-hover);
@@ -10070,6 +10110,15 @@ textarea.form-control-lg {
     width: 39.06vw;
     height: 92.77vh;
   }
+  .img-post-box{
+    width: 100% !important;
+    height: 73.24vh !important;
+  }
+  .profile-info-post-box,.desc-post,.action-icon{
+    width: 100% !important;
+  }
+
+
 }
 
 @media(max-width: 760px){
@@ -10108,16 +10157,17 @@ textarea.form-control-lg {
     display: none;
   }
   .content{
-    height: 76.82vh;
+    height: calc(100vh - 7.73vh - 15.45vh) !important;;
     margin-left: 0px;
     margin-right: 0px;
     padding-right: 0px;
     padding-left: 0px;
+    overflow: hidden;
   }
   .stories{
     display: flex;
-    height: 15.45vh;
     flex-direction: row ;
+    height: 15.45vh;
     flex-wrap: nowrap;
     align-items: center;
     overflow-x: scroll;
@@ -10198,6 +10248,17 @@ textarea.form-control-lg {
   .user-name-story,.user-period-story{
     font-size: 18px;
   }
+  .img-post-box{
+    width:86.05vw !important;
+    height: 59.01vh !important;
+  }
+  .profile-info-post-box,.desc-post,.action-icon{
+    width:86.05vw !important;
+  }
+  .box-posts{
+    height:calc(100vh-7.73vh) !important;
+  }
+
 }
 
 @media (min-width: 768px) {
@@ -12497,14 +12558,48 @@ textarea.form-control-lg {
   }
 }
 
-.box {
-  border: 1px solid black;
-  border-radius: 10px; /* Arrotonda gli angoli */
-  width: 600px; /* Larghezza della box */
-  margin: 0 auto; /* Centra orizzontalmente */
-  padding: 20px; /* Spazio interno */
-  text-align: center; /* Allinea il testo al centro */
-  margin-top: 100px;
+.box-posts{
+  max-height: 100vh;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.action-icon{
+  width: 41.7vw;
+}
+
+.post {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 3.7vh;
+}
+
+.profile-info-post-box,.desc-post{
+  text-align: start;
+  width: 41.7vw;
+  font-size: 18px;
+}
+
+
+.img-post-box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 41.7vw;
+  height: 69.4vh;
+  background-color: rgba(0, 0, 0, .1);
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.img-post-box img{
+  max-width: 100%;
+}
+
+.post-name{
+  display: inline-block;
+  font-size: 18px;
 }
 
 #descrizione_modifica {
