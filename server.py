@@ -439,6 +439,7 @@ def post_like():
 # ---------------- route per gestione messaggi ---------------------- #
 @server.route('/messages/', methods=['GET', 'POST'])
 def messages():
+    return render_template("message_page_desktop.html", ID=82)
     if session['logged_in'] == True:
         if request.method == 'GET':
 
