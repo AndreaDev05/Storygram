@@ -213,11 +213,11 @@ def profile(id):
         else
             if is_private:
                 
-                following_query = 
+                following_query = f"SELECT * FROM Segui WHERE Seguace = {session['IDUtente']}"
                 
 
             else: # profilo pubblico
-                _renderProfile(id, profile_info, is_owner
+                _renderProfile(id, profile_info, is_owner)
         
 
         
