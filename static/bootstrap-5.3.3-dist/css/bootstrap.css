@@ -72,6 +72,14 @@
   --url-icon-keyboard: url("../../icons/keyboard_icon_light.svg");
   --url-icon-keyboard-focus: url("../../icons/keyboard_focus_icon_light.svg");
 
+  --url-icon-send: url("../../icons/send_icon_light.svg");
+  --url-icon-send-focus: url("../../icons/send_focus_icon_light.svg");
+
+  /*colore messaggi*/
+
+  --bs-message-remote: #FF9700;
+  --bs-message-local: #41A3C7;
+
 }
 
 [data-bs-theme=dark] {
@@ -137,6 +145,14 @@
 
   --url-icon-keyboard: url("../../icons/keyboard_icon_dark.svg");
   --url-icon-keyboard-focus: url("../../icons/keyboard_focus_icon_dark.svg");
+
+  --url-icon-send: url("../../icons/send_icon_dark.svg");
+  --url-icon-send-focus: url("../../icons/send_focus_icon_dark.svg");
+
+  /*colore messaggi*/
+
+  --bs-message-remote: var(--bs-secondary);
+  --bs-message-local: var(--bs-tertiary);
 }
 
 *,
@@ -3020,8 +3036,8 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
 }
 
-.bar:focus + .keyboard-icon{
-  content: var(--url-icon-keyboard-focus);
+.send-icon{
+  content: var(--url-icon-send);
   background-repeat: no-repeat;
 }
 
@@ -3102,7 +3118,8 @@ textarea.form-control-lg {
 }
 
 .stories{
-  overflow-y: scroll;
+  overflow-y: hidden;
+  max-height: 100%;
 }
 
 .story-text{
@@ -3190,8 +3207,33 @@ textarea.form-control-lg {
   border-top: rgba(var(--bs-outline-rgb),.25);
   border-top-style: solid;
   border-top-width: 1px;
+  padding:10px;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
+.message{
+  height:auto;
+  max-width: 17.97vw;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  word-wrap: break-word;
+  border-radius: 12px;
+  margin-top:25px;
+  
+}
+
+.message.locale{
+  background-color: var(--bs-message-local) !important;
+  align-self: end;
+}
+
+.message.remoto{
+  background-color: var(--bs-message-remote) !important;
+  align-self: start;
+}
 
 .main-messages-box{
   border-top: rgba(var(--bs-outline-rgb),.25);
@@ -3200,7 +3242,7 @@ textarea.form-control-lg {
 }
 
 .message-bar-box{
-  height: 7.41vh;
+  height: 7.30vh;
   display: flex;
   justify-content: center;
 }
@@ -3209,19 +3251,121 @@ textarea.form-control-lg {
   width: 100%;
   height: 100%;
   border: none;
-  outline:none
+  outline:none;
+  color: var(--bs-on-background);
+  font-size: 18px;
+  background-color: transparent;
+}
+
+.input-bar::placeholder{
+  font-size: 18px;
+}
+
+.bar-icon{
+  display: flex;
+  align-items: center;
+}
+
+.bar-icon:has(.keyboard-icon){
+  justify-content: end;
+}
+
+.bar-icon:has(.send-icon){
+  justify-content: start;
 }
 
 .bar{
   height: calc(100% - 20px);
   width: calc(100% - 50px);
-  border: solid black 1px;
+  border-top: solid transparent 1px;
+  border-right: solid transparent 1px;
+  border-left: solid transparent 1px;
+  border-bottom: solid var(--bs-outline) 1px;
   display: flex;
-  justify-content: space-around;
+  justify-content: start;
+
+}
+
+.bar:focus-within{
+  border: solid var(--bs-outline) 1px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.bar:focus-within .keyboard-icon{
+  content: var(--url-icon-keyboard-focus);
+  background-repeat: no-repeat;
+}
+
+.bar:focus-within .btn-send{
+  cursor: auto;
+  pointer-events: all;
+}
+
+.bar:focus-within .send-icon{
+  content: var(--url-icon-send-focus);
+  background-repeat: no-repeat;
+}
+
+.btn-send{
+  width: 30px;
+  height: 30px;
+  border-radius: 50% !important;
+  padding: 0px !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-send:hover{
+  background-color: rgba(0, 0, 0, .1) !important;
 }
 
 .message-box{
   height: calc(100vh - 7.41vh - 11.11vh);
+  padding: 25px;
+  padding-top:0px;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.remote-user-profile-img{
+  padding-left:25px;
+  display:flex;
+  align-items: center;
+}
+
+.remote-user-name{
+  font-size: 24px;
+  text-align: start;
+  display:flex;
+  align-items: center;
+}
+
+.contact{
+  height: 7.41vh;
+  display: flex;
+  align-items: center;
+}
+
+.contact:hover{
+  background-color: rgba(0, 0, 0, .1);
+  border-radius: 8px;
+}
+
+.contact-user-profile-img{
+  margin-left:35px;
+  display:flex;
+  align-items: center;
+}
+
+.contact-user-name{
+  font-size: 18px;
+  text-align: start;
+  display:flex;
+  align-items: center;
+  margin-left: 25px;
 }
 
 .stories:has(.contacts-box){

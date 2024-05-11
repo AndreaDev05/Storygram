@@ -7,6 +7,7 @@ from scriptUpload import uploadImmagineProfilo, uploadImmaginePost # usato per u
 from db_control import executeQuery, is_following # usato per la comunicazione con il db
 import json # usato per manipolare i json (esempio last codice utente)
 from random import randint
+from datetime import datetime
 
 server = Flask(__name__)
 
@@ -29,8 +30,7 @@ server.secret_key = credentials.chiave_segreta
 def home():
     if session.get('logged_in'):
 
-        post_e_profilo = executeQuery("SELECT * FROM Post JOIN Profilo ON (Post.IDProfiloProvenienza = Profilo.IDProfilo) ORDER BY Data")
-        print(post_e_profilo)
+        post_e_profilo = executeQuery("SELECT * FROM Post JOIN Profilo ON (Post.IDProfiloProvenienza = Profilo.IDProfilo) ORDER BY Data DESC")
         return render_template("home.html", ID=session['IDUtente'], lista_post=post_e_profilo, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')  
@@ -185,31 +185,44 @@ def logout():
     else:
         return redirect("http://storygram.it/login/", code=302)
 
+
 # ---------------- route per la visualizzare un profilo ---------------------- #
+def _renderProfile(id : int, profile_info : list, is_owner : bool):
+    posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
+    user_posts = executeQuery(posts_query)
+
+    return render_template('profile.html', ID=id, is_owner=is_owner, nomeUtente=profile_info[0]['Nome'] + " " + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+
+
 @server.route('/profile/<int:id>/', methods=['GET'])
 def profile(id):
     if session.get('logged_in') == True:
-         
-        # Verifica se l'utente corrente è il proprietario del profilo o lo sta seguendo
-        is_owner_or_following = session['IDUtente'] == id or is_following(session['IDUtente'], id)
-        
-        # Query per recuperare informazioni sul profilo dell'utente
-        profile_query = f"SELECT Nome, Cognome, Descrizione, NumeroDiPost, PathImmagineProfilo, Seguaci, Seguiti, Privacy FROM Profilo WHERE IDProfilo = {id};"
-        profile_info = executeQuery(profile_query)
-        
-        # Controlla se il profilo è privato
-        is_private = profile_info[0]['Privacy'] == 1 
 
-        # Se il profilo è privato e l'utente non è il proprietario né lo sta seguendo, restituisci solo un messaggio di profilo privato
-        if is_private and not is_owner_or_following:
-            return jsonify({"message": "Profilo privato"}), 200
+        # Query per recuperare informazioni sul profilo dell'utente
+        profile_query = f"SELECT * FROM Profilo WHERE IDProfilo = {id};"
+        profile_info = executeQuery(profile_query)
+
+        posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
+        user_posts = executeQuery(posts_query)
+        
+        is_owner = True if(id == session['IDUtente']) else False
+        is_private = True if(profile_info[0]['Privacy'] == 1) else False
+
+        if is_owner:
+            _renderProfile(id, profile_info, is_owner)
+        else
+            if is_private:
+                
+                following_query = 
+                
+
+            else: # profilo pubblico
+                _renderProfile(id, profile_info, is_owner
+        
+
         
         # Recupera i post solo se il profilo è pubblico o se l'utente è il proprietario o lo sta seguendo
         if not is_private or is_owner_or_following:
-            
-            posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
-            user_posts = executeQuery(posts_query)
-            print(user_posts)
 
             # cerco se l'utente richiesto è richiesto dal proprietario o no
             is_owner = True if(id == session["IDUtente"]) else False
@@ -357,8 +370,11 @@ def create_post():
             file = request.files['file_post']
             newpath = uploadImmaginePost(file,server,session)
 
+            data_ora = datetime.now()
+            data_ora = f"{data_ora.year}-{data_ora.month}-{data_ora.day} {data_ora.hour}:{data_ora.minute}:{data_ora.second}"
+
             # inserisco le informazioni del nuovo post nel db
-            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', NOW(), '/{newpath}', {session['IDUtente']})"
+            query = f"INSERT INTO Post (Descrizione, Data, PercorsoFile, IDProfiloProvenienza) VALUES ('{descrizione}', '{data_ora}', '/{newpath}', {session['IDUtente']})"
             executeQuery(query)
 
             # aggiorno l'applicaizone e rindirizzo alla pagina principale 

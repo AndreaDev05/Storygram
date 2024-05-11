@@ -16,7 +16,7 @@
     <div class="post">
         <div class="profile-info-post-box">
             <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
-            <p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p>
+            <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a> <p>il {{post['Data']}}</p>
         </div>
         <div class="img-post-box">
             <img src="{{post['PercorsoFile']}}" alt="imm_post">
