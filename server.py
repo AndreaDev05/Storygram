@@ -30,10 +30,67 @@ server.secret_key = credentials.chiave_segreta
 def home():
     if session.get('logged_in'):
 
-        post_e_profilo = executeQuery("SELECT * FROM Post JOIN Profilo ON (Post.IDProfiloProvenienza = Profilo.IDProfilo) ORDER BY Data DESC")
-        return render_template("home.html", ID=session['IDUtente'], lista_post=post_e_profilo, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+        # query per calcolare i psot in tendenza 
+        query_trending = f'''
+SELECT Post.*, 
+    Profilo.*,
+    COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+    COUNT(Commento.IDPostDestinazione) AS NumCommenti
+FROM Post
+LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+INNER JOIN Profilo ON Post.IDProfiloProvenienza = Profilo.IDProfilo
+LEFT JOIN Segue ON Profilo.IDProfilo = Segue.Seguito AND Segue.Seguace = {session['IDUtente']}
+WHERE (Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY))
+    AND (Profilo.Privacy = 0)
+    AND (Post.IDProfiloProvenienza NOT IN (SELECT Seguito FROM Segue WHERE Seguace = {session['IDUtente']})
+        AND Post.IDProfiloProvenienza != {session['IDUtente']})
+GROUP BY Post.IDPost
+ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione) * 1.5) DESC
+LIMIT 50;
+
+                        '''
+        
+        # ottengo  dal db i post che sono in tendenza 
+        post_trending = executeQuery(query_trending)
+
+        # query per ottenere i post della home dell'utente 
+        query_seguiti = f'''
+                        SELECT Post.*, Profilo.*
+                        FROM Post
+                        JOIN Profilo ON Post.IDProfiloProvenienza = Profilo.IDProfilo
+                        LEFT JOIN Segue ON Post.IDProfiloProvenienza = Segue.Seguito
+                        WHERE Profilo.IDProfilo = {session['IDUtente']} OR Segue.Seguace = {session['IDUtente']}
+                        ORDER BY Post.Data DESC;
+                        '''
+        # query da tenere come debug per vedere anche i psot dei profili che non seguiamo 
+        # post_seguiti  = executeQuery("SELECT * FROM Post JOIN Profilo ON (Post.IDProfiloProvenienza = Profilo.IDProfilo) ORDER BY Data DESC")
+        
+        # ottengo dal db i post degli utenti che l'utente segue 
+        post_seguiti  = executeQuery(query_seguiti)
+
+        # Combina i post seguiti e i post in tendenza in una lista alternata
+        combined_posts = []
+        seguiti_index = 0
+        trending_index = 0
+        while seguiti_index < len(post_seguiti) and trending_index < len(post_trending):
+            for _ in range(3):  # Aggiungi 3 post seguiti
+                if seguiti_index < len(post_seguiti):
+                    combined_posts.append(post_seguiti[seguiti_index])
+                    seguiti_index += 1
+            if trending_index < len(post_trending): # Aggiungi 1 post in tendenza
+                combined_posts.append(post_trending[trending_index])
+                trending_index += 1
+
+        # Aggiungi eventuali post seguiti e in tendenza rimanenti
+        combined_posts.extend(post_seguiti[seguiti_index:])
+        combined_posts.extend(post_trending[trending_index:])
+
+        # carico la home con i relativi dati 
+        return render_template("home.html", ID=session['IDUtente'], lista_post=combined_posts, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')  
+
 
 # ------------- route per il login ---------------------- #
 @server.route('/login/', methods=["GET", "POST"])
@@ -245,7 +302,6 @@ def modifica_profilo(id):
                 return jsonify({"message": "Forbidden"}), 403  # da definire poi !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         else:
-            
             
             if request.form['Privacy'] == "on":
                 Privacy = 1

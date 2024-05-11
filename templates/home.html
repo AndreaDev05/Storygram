@@ -12,24 +12,45 @@
 
 {% block content %}
 <div class="box-posts pt-sm-6 overflow-auto">
+    {% set counter = 0 %}
     {% for post in lista_post %}
-    <div class="post">
-        <div class="profile-info-post-box">
-            <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
-            <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a> <p>il {{post['Data']}}</p>
-        </div>
-        <div class="img-post-box">
-            <img src="{{post['PercorsoFile']}}" alt="imm_post">
-        </div>
-        <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
-        <div class="action-icon">
-            <img class="heart-icon me-3" src alt="img-like">
-            <img class="comment-icon" src alt="img-comment">
-        </div>
-    </div>
+        {% if counter < 3 %}
+            <!-- Visualizza post seguiti -->
+            <div class="post">
+                <div class="profile-info-post-box">
+                    <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
+                    <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a> <p>il {{post['Data']}}</p>
+                </div>
+                <div class="img-post-box">
+                    <img src="{{post['PercorsoFile']}}" alt="imm_post">
+                </div>
+                <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
+                <div class="action-icon">
+                    <img class="heart-icon me-3" src alt="img-like">
+                    <img class="comment-icon" src alt="img-comment">
+                </div>
+            </div>
+            {% set counter = counter + 1 %}
+        {% else %}
+            <!-- Visualizza post in tendenza -->
+            <div class="post">
+                <div class="profile-info-post-box">
+                    <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
+                    <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a> <p>il {{post['Data']}}</p>
+                </div>
+                <div class="img-post-box">
+                    <img src="{{post['PercorsoFile']}}" alt="imm_post">
+                </div>
+                <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
+                <div class="action-icon">
+                    <img class="heart-icon me-3" src alt="img-like">
+                    <img class="comment-icon" src alt="img-comment">
+                </div>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
-{% endblock%}
+{% endblock %}
 
 {% block script %}
 

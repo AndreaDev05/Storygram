@@ -36,14 +36,20 @@
                 <td style="border-right: 1px solid black"> <label for="Privacy">Profilo privato: </label> </td>
                 <td>
                     <label class="switch">
-                        {% if privacy == 1 %}
-                        <input type="checkbox" name="Privacy" checked>
-                        {% else %}
-                        <input type="checkbox" name="Privacy">
-                        {% endif %}
+                        <input type="checkbox" id="privacyCheckbox" name="Privacy" {% if privacy == 1 %} checked {% endif %}>
                         <span class="slider round"></span>
                     </label>
+                    <input type="hidden" id="hiddenPrivacy" name="Privacy" value="{% if privacy == 1 %}1{% else %}0{% endif %}">
                 </td>
+                <script>
+                    document.getElementById('privacyCheckbox').addEventListener('change', function() {
+                        if (this.checked) {
+                            document.getElementById('hiddenPrivacy').value = 1;
+                        } else {
+                            document.getElementById('hiddenPrivacy').value = 0;
+                        }
+                    });
+                </script>                
             </tr>
             <tr>
                 <td></td>
