@@ -60,7 +60,7 @@
                     <span class="text-sidebar">Home</span>
                 </button>
                 <!-- bottone per redirect alla pagina di ricerca -->
-                <button type="button" class="btn btn-sidebar" role="button">
+                <button type="button" class="btn btn-sidebar" role="button" onclick="cerca_utente()">
                     <span class="icon-sidebar">
                         <img class="search-icon" src="" alt="img_search">
                     </span>
@@ -125,8 +125,11 @@
 
             // per iniziare a seguire un utente
             function seguiutente(){
-                valore = Document.getElementById("c1").value
                 window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
+            }
+
+            function stop_seguiutente(){
+                window.location.href="{{url_for('stop_segui', id_profilo_da_stop_seguire=ID)}}";
             }
 
             function modificaprofilo(){
@@ -135,6 +138,10 @@
 
             function crea(){
                 window.location.href="{{url_for('create_post')}}"
+            }
+
+            function cerca_utente(){
+                window.location.href="{{url_for('search')}}"
             }
         </script>
         {% block script %}

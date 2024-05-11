@@ -1,0 +1,19 @@
+{% extends "layout_base.html" %}
+
+{% block content %}
+
+<form action="{{url_for('search')}}" method="POST">
+    <input type="text" name="input_cerca_utente" placeholder="Nome utente">
+    <button class="btn btn-primary btn-sm" type="submit">Conferma</button>
+</form>
+{% if cerca == True %}
+    {% for profilo in profili_trovati %}
+        <br>   
+        <div>
+            <img src="{{profilo['PathImmagineProfilo']}}" alt="imm_profilo"> <a href="{{url_for('profile', id=profilo['IDProfilo'])}}">{{profilo['Nome']}} {{profilo['Cognome']}}</a>
+        </div>
+    {% endfor%}
+{% endif %}
+
+
+{% endblock %}

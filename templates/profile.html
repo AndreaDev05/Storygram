@@ -48,7 +48,12 @@
                 {% if is_owner == True %}
                 <button class="btn widget-btn profile-btn" onclick="modificaprofilo()">Modifica</button> <!-- se sono il proprietario mostro il pulsante per modificare il profilo-->
                 {% else %}
-                <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button> <!-- se non sono il proprietario mostro il pulsante per seguire l'utente-->
+                    <!-- se non sono il proprietario mostro il pulsante per seguire l'utente-->
+                    {% if is_following == True %}
+                    <button class="btn widget-btn profile-btn" onclick="stop_seguiutente()">Non seguire</button>
+                    {% else %}
+                    <button class="btn widget-btn profile-btn" onclick="seguiutente()">Segui</button>
+                    {% endif%}
                 {% endif %}
                 <button class="btn widget-btn profile-btn">Messaggi</button> <!-- mostro il pulsante per i messaggi-->
             </div>
