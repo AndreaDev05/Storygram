@@ -330,4 +330,9 @@ questo per motivi di compatibilità del sito e di sicurezza, per evitare che non
 
 ## Front-End
 
-## Progettazione del progetto
+## Team di Progetto:
+
+- De Panni Andrea: DB-Manager e BE-Manager
+- Gambardella Giovanni Antonio: FE-Manager, responsabile debug e aiuto BE
+- Matteazzi Andrea: project-Manager, responsabile infrastrutture, aiuto BE
+- Toso Elia: responsabile presentazioni
