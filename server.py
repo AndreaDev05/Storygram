@@ -4,7 +4,7 @@ import static.credentials as credentials # usato per importare credenziali utili
 import hashlib # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptCartelleUtenti  import creaCartella # usato per la conversione della password in hash mediante l'algoritmo sha-256
 from scriptUpload import uploadImmagineProfilo, uploadImmaginePost # usato per uplodare nel server le immaigni profilo degli utenti 
-from db_control import executeQuery, is_following # usato per la comunicazione con il db
+from db_control import executeQuery # usato per la comunicazione con il db
 import json # usato per manipolare i json (esempio last codice utente)
 from random import randint
 from datetime import datetime
@@ -32,25 +32,27 @@ def home():
 
         # query per calcolare i psot in tendenza 
         query_trending = f'''
-SELECT Post.*, 
-    Profilo.*,
-    COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
-    COUNT(Commento.IDPostDestinazione) AS NumCommenti
-FROM Post
-LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
-LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
-INNER JOIN Profilo ON Post.IDProfiloProvenienza = Profilo.IDProfilo
-LEFT JOIN Segue ON Profilo.IDProfilo = Segue.Seguito AND Segue.Seguace = {session['IDUtente']}
-WHERE (Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY))
-    AND (Profilo.Privacy = 0)
-    AND (Post.IDProfiloProvenienza NOT IN (SELECT Seguito FROM Segue WHERE Seguace = {session['IDUtente']})
-        AND Post.IDProfiloProvenienza != {session['IDUtente']})
-GROUP BY Post.IDPost
-ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione) * 1.5) DESC
-LIMIT 50;
-
-                        '''
+            SELECT Post.*, 
+                Profilo.*,
+                COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
+                COUNT(Commento.IDPostDestinazione) AS NumCommenti
+            FROM Post
+            LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
+            LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
+            INNER JOIN Profilo ON Post.IDProfiloProvenienza = Profilo.IDProfilo
+            LEFT JOIN Segue ON Profilo.IDProfilo = Segue.Seguito AND Segue.Seguace = {session['IDUtente']}
+            WHERE (Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY))
+                AND (Profilo.Privacy = 0)
+                AND (Post.IDProfiloProvenienza NOT IN (SELECT Seguito FROM Segue WHERE Seguace = {session['IDUtente']})
+                    AND Post.IDProfiloProvenienza != {session['IDUtente']})
+            GROUP BY Post.IDPost
+            ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione) * 1.5) DESC
+            LIMIT 50;
+            '''
         
+        query_mipiace_dati = f"SELECT IDPostDestinazione FROM MiPiace WHERE IDProfiloProvenienza = '{session['IDUtente']}'"
+        post_con_mipiace = executeQuery(query_mipiace_dati)
+
         # ottengo  dal db i post che sono in tendenza 
         post_trending = executeQuery(query_trending)
 
@@ -86,8 +88,24 @@ LIMIT 50;
         combined_posts.extend(post_seguiti[seguiti_index:])
         combined_posts.extend(post_trending[trending_index:])
 
+        post_con_mi_piace = []
+        for post in post_con_mipiace:
+            post_con_mi_piace.append(post['IDPostDestinazione'])
+
+        index_mipiace = []
+        for post in combined_posts:
+            if post['IDPost'] in post_con_mi_piace:
+                index_mipiace.append(1)
+            else:
+                index_mipiace.append(0)
+
+        print("post mi piace")
+        print(post_con_mi_piace)
+        print("index mi piace")
+        print(index_mipiace)
+
         # carico la home con i relativi dati 
-        return render_template("home.html", ID=session['IDUtente'], lista_post=combined_posts, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+        return render_template("home.html", ID=session['IDUtente'], index_mipiace=index_mipiace, lista_post=combined_posts, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
     else:
         return render_template('login.html')  
 
@@ -369,33 +387,6 @@ def following(id):
     else:
         return redirect("http://storygram.it/login/", code=302)
 
-
-# per visualizzare i post in tendenza delgi ultimi 30 giorni (da dfinire ul limite di post per la sezione)
-@server.route('/trending/', methods=['GET'])
-def trending():
-    if session['logged_in'] == True:
-        if request.method == 'GET':
-            # Query per ottenere i post con più interazioni (postati negli ultimi 30 giorni) (aggiugnere gestione errori)
-            query = """
-                    SELECT Post.*, 
-                        COUNT(MiPiace.IDPostDestinazione) AS NumMiPiace, 
-                        COUNT(Commento.IDPostDestinazione) AS NumCommenti
-                    FROM Post
-                    LEFT JOIN MiPiace ON Post.IDPost = MiPiace.IDPostDestinazione
-                    LEFT JOIN Commento ON Post.IDPost = Commento.IDPostDestinazione
-                    WHERE Post.Data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                    GROUP BY Post.IDPost
-                    ORDER BY (COUNT(MiPiace.IDPostDestinazione) + COUNT(Commento.IDPostDestinazione) * 1.5) DESC
-            """
-            trending_posts = executeQuery(query) 
-
-            # !! nome pagina poi da definire !!
-            return jsonify({"message": "pagina trending"},trending_posts), 200 # !!  pagina poi da definire !!
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
-    else:
-        return redirect("http://storygram.it/login/", code=302)
-
 # ---------------- route per ricercare un utente ---------------------- #
 @server.route('/search/', methods=['GET', 'POST'])
 def search():
@@ -445,70 +436,79 @@ def create_post():
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
         return redirect("http://storygram.it/login/", code=302)
-    
-# ---------------- route per visualizzare i commenti di un post o aggiungere un commento al post ---------------------- #
-@server.route('/post/<int:post_id>/comments/', methods=['GET', 'POST'])
-def post_comment(post_id):
+
+# ---------------- route per visualizzare i like di un post o agigugnerne uno o toglierlo ---------------------- #
+@server.route('/post/like/', methods=['POST'])
+def post_like():
     if session['logged_in'] == True:
-        if request.method == 'GET':
+        # Recupera i dati inviati dal form
+        like = request.form.get('like')
+        post_id = request.form.get('post_id')
+        id_provenienza = session['IDUtente']
 
-            # Recupero l'id del post relativo al commento (da implementare)
-            post_id = -1 # debug
-
-            query = f"SELECT * FROM Commento WHERE IDPost = '{post_id}'" # recupero i commenti del post relativo all'id
-            comments = executeQuery(query)
-
-            return render_template('comments.html', comments=comments) # redirect alla pagina dei commenti
-
-        elif request.method == 'POST':
-            # Recupera i dati inviati dal form
-            Commento = request.form.get('Commento')
-            
-            # Recupero l'id del post relativo al commento (da implementare)
-            post_id = -1 # debug 
-
-            # inserisco i dati del commento nel database
-            query = f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPostDestinazione) VALUES ('{Commento}', NOW(), {session['codiceUtente']}, {post_id})"
-            executeQuery(query)
-
-            return jsonify({"message": "Commento inserito"}), 200 # !!  pagina poi da definire !!
-            
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405
+        print(like)
+        print(post_id)
+        print(id_provenienza)
+        
+        try:
+            # a secoda se è un like o un un-like eseguo la giusta query
+            if like == "True":
+                query = f"INSERT INTO MiPiace (IDProfiloProvenienza, IDPostDestinazione) VALUES ({id_provenienza}, {post_id})"
+                executeQuery(query)
+                return('', 200)
+            else:
+                query = f"DELETE FROM MiPiace WHERE IDProfiloProvenienza = {id_provenienza} AND IDPostDestinazione = {post_id}"
+                executeQuery(query)
+                return('', 200)
+        except:
+            return('', 500)
+    
     else:
         return redirect("http://storygram.it/login/", code=302)
 
-# ---------------- route per visualizzare i like di un post o agigugnerne uno o toglierlo ---------------------- #
-@server.route('/post/like/', methods=['GET', 'POST'])
-def post_like():
+# ---------------- route per gestione commenti ---------------------- #
+@server.route('/post/comment/', methods=['GET', 'POST'])
+def post_comment():
     if session['logged_in'] == True:
-        if request.method == 'GET':
-            # Recupero l'id del post relativo al like 
-            post_id = -1 # debug
+        if request.method == "POST":
+            idpost = request.form['post_id']
+            idutente_provenienza = request.form['id_provenienza']
+            text = request.form['text']
 
-            # Query per ottenere i like del post
-            query = f"SELECT * FROM MiPiace WHERE IDPost = '{post_id}'"
-            likes = executeQuery(query)
+            data_ora = datetime.now()
+            data_ora = f"{data_ora.year}-{data_ora.month}-{data_ora.day} {data_ora.hour}:{data_ora.minute}:{data_ora.second}"
 
-            return render_template('likes.html', likes=likes) # redirect alla pagina dei like (da definire)
-        elif request.method == 'POST':
-            # Recupera i dati inviati dal form
-            like = request.form.get('like')
-            post_id = request.form.get('post_id')
-            id_provenienza = session['IDUtente']
+            # controllo se il testo è vuoto o è formato solo da spazi
+            if text != "" or not text.isspace():
+                executeQuery(f"INSERT INTO Commento (Commento, Data, IDProfiloProvenienza, IDPostDestinazione) VALUES ('{text}', '{data_ora}', '{idutente_provenienza}', '{idpost}')")
+                return('', 200)
+            return('', 400)
+        elif request.method == "GET":
             
-            # a secoda se è un like o un un-like eseguo la giusta query
-            if like == True:
-                query = f"INSERT INTO MiPiace (Data, IDProfiloProvenienza, IDPostDestinazione) VALUES (NOW(), {id_provenienza}, {post_id})"
-                executeQuery(query)
-            elif like == False:
-                query = f"DELETE FROM MiPiace WHERE IDProfiloProvenienza = {id_provenienza} AND IDPostDestinazione = {post_id}"
-                executeQuery(query)
+            post_id = request.args.get('post_id', type=int)
+            try:
+                query_commenti = f"SELECT * FROM Commento INNER JOIN Profilo ON (IDProfiloProvenienza = IDProfilo) WHERE IDPostDestinazione = '{post_id}'"
+                query_commenti = executeQuery(query_commenti)
 
-        else:
-            return jsonify({"message": "Metodo non consentito"}), 405 # !!  pagina poi da definire !!
+                lista_commenti = []
+                for commento in query_commenti:
+                    diz = {
+                        "IDProfilo" : commento['IDProfilo'],
+                        "Nome" : commento['Nome'],
+                        "Cognome" : commento['Cognome'],
+                        "text" : commento['Commento'],
+                        "PathImmagineProfilo" : commento['PathImmagineProfilo']
+                    }
+                    lista_commenti.append(diz)
+
+                print(lista_commenti)
+                return jsonify(lista_commenti)
+            except:
+                return ('', 400)
     else:
-            return redirect("http://storygram.it/login/", code=302)
+        return redirect("http://storygram.it/login/", code=302)
+
+
   
 # ---------------- route per gestione messaggi ---------------------- #
 @server.route('/messages/', methods=['GET', 'POST'])

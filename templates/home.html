@@ -11,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+<input type="hidden"  id="c1" name="IDUtente" value="{{ ID }}">
 <div class="box-posts pt-sm-6 overflow-auto">
     {% set counter = 0 %}
     {% for post in lista_post %}
@@ -31,8 +32,18 @@
                 </div>
                 <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
                 <div class="action-icon">
-                    <img class="heart-icon me-3" src alt="img-like">
-                    <img class="comment-icon" src alt="img-comment">
+                    {% if index_mipiace[loop.index0] == 1 %}
+                        <button class="btn" id="{{ post['IDPost'] }}">
+                            <img class="heart-icon liked" src alt="img-like">
+                        </button>
+                    {% else %}
+                        <button class="btn" id="{{ post['IDPost'] }}">
+                            <img class="heart-icon" src alt="img-like">
+                        </button>
+                    {% endif %}
+                    <button class="btn" onclick="comment(this)">
+                        <img class="comment-icon" src alt="img-comment">
+                    </button>
                 </div>
             </div>
             {% set counter = counter + 1 %}
@@ -48,8 +59,18 @@
                 </div>
                 <p class="desc-post mt-2"> {{post["Descrizione"]}} </p>
                 <div class="action-icon">
-                    <img class="heart-icon me-3" src alt="img-like">
-                    <img class="comment-icon" src alt="img-comment">
+                    {% if index_mipiace[loop.index0] == 1 %}
+                        <button class="btn" id="{{ post['IDPost'] }}">
+                            <img class="heart-icon liked" src alt="img-like">
+                        </button>
+                    {% else %}
+                        <button class="btn" id="{{ post['IDPost'] }}">
+                            <img class="heart-icon" src alt="img-like">
+                        </button>
+                    {% endif %}
+                    <button class="btn" onclick="comment()">
+                        <img class="comment-icon" src alt="img-comment">
+                    </button>
                 </div>
             </div>
         {% endif %}
@@ -60,9 +81,84 @@
 {% block script %}
 
 <script>
-    $(".heart-icon").on("click", function(){
-        $(this).toggleClass("liked");
+    $(".btn img.heart-icon").on("click",function(){
+        var t = $(this);
+        var IDPost = $(this).parent().attr("id");
+        if(t.hasClass("liked")){
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "{{url_for('post_like')}}",
+                    data: {
+                        like: "False",
+                        post_id: IDPost,
+                        id_provenienza: document.getElementById("c1").value
+                        },
+                    success:function(){
+                        t.removeClass("liked");
+                        console.log("tolta classe");
+                    }
+                }
+            );
+        } else {
+            $.ajax({
+                    type: "POST",
+                    url: "{{url_for('post_like')}}",
+                    data: {
+                        like: "True",
+                        post_id: IDPost,
+                        id_provenienza: document.getElementById("c1").value
+                        },
+                    success:function(){
+                        t.addClass("liked");
+                        console.log("aggiunta classe");
+                    }
+                });
+        }
+        
     });
+
+    function comment(obj){
+        $(".comment-overlay").removeClass("d-none");
+        $(".comment-box").addClass("opened");
+        scrImgProfile = $(obj).parent().parent().find(".img-post").attr("src");
+        nomeUtente = $(obj).parent().parent().find(".post-name").text();
+        scrPost = $(obj).parent().parent().find(".img-post-box img").attr("src");
+        idPost = $(obj).parent().find(".heart-icon").parent().attr("id");
+        
+
+        $("#nomeUtentePost").text(nomeUtente);
+        $("#profileImageComment").attr("src",scrImgProfile);
+        $(".img-comment").attr("src",scrPost);
+        $(".post-comment-selected").attr("id",idPost);
+        $.ajax(
+            {
+                type: "GET",
+                url: "{{url_for('post_comment')}}",
+                data: {
+                    post_id: idPost
+                },
+                success:function(data){
+                    console.log(data)
+                    data.forEach(d => {
+                        $(".comments").append(`
+                            <div class="comment">
+                                <div class="commenter-info">
+                                    <img src="${d["PathImmagineProfilo"]}" alt="" class="rounded-circle" width="24px" height="24px">
+                                    <a href="/profile/${d["IDProfilo"]}"><p class="nome-commenter">
+                                        ${d["Nome"]} ${d["Cognome"]}
+                                    </p></a>
+                                </div>
+                                <div class="comment-text">
+                                    ${d["text"]}
+                                </div>
+                            </div>`
+                        )
+                    });
+                }
+            }
+        );
+    }
 </script>
 
 {% endblock%}

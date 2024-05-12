@@ -74,7 +74,7 @@
                     <span class="text-sidebar">Crea</span>
                 </button>
                 <!-- bototne per redirect alla pagina dei messaggi -->
-                <button type="button" class="btn btn-sidebar" role="button">
+                <button type="button" class="btn btn-sidebar" role="button" onclick="renderMessage()">
                     <span class="icon-sidebar">
                         <img class="message-icon" src="" alt="img_message">
                     </span>
@@ -183,6 +183,52 @@
                 </div>
             </div>
         </div>
+        <div class="vw-100 vh-100 fixed-top comment-overlay d-none">
+            <div class="comment-box">
+                <div class="row m-auto mh-100 overflow-hidden">
+                    <div class="col post-comment-selected" id="">
+                        <img class="img-comment" src alt="">
+                    </div>
+                    <div class="col">
+                        <div class="row m-auto">
+                            <div class="col-12 info-user-post">
+                                <div class="row h-100">
+                                    <div class="col intestazione-mobile">
+                                        <span>Commenti</span>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center img-profilo-comment">
+                                        <img class="rounded-circle" src alt="" class="" height="72px" width="72px" id="profileImageComment">
+                                    </div>
+                                    <div class="col d-flex align-items-center nomeUtentePost-box">
+                                        <span id="nomeUtentePost"></span>
+                                    </div>
+                                    <div class="col-2 close-comment">
+                                        <button class="btn d-flex" onclick="close_comment()" height="24px" width="24px">
+                                            <img src alt="" class="close-icon align-self-start" >
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 comments">
+                            </div>
+                            <div class="col-12 comment-bar-col">
+                                <div class="row bar comment-bar">
+                                    <div class="col-2 bar-icon">
+                                        <img class="keyboard-icon" src alt="">
+                                    </div>
+                                    <div class="col-10">
+                                        <input class="input-bar" id='input-bar' placeholder="Commenta qualcosa...">
+                                    </div>
+                                </div>
+                                <button class="btn" onclick="send_comment(this)">
+                                    <img src alt="" class="send-icon align-self-end" width="24px" height="24px">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script src="{{url_for('static', filename='bootstrap-5.3.3-dist/js/bootstrap.js')}}"></script>
         <!-- script per i vari redirect alle varie pagine del menu responsive -->
         <script>
@@ -214,6 +260,8 @@
             function seguiutente(){
                 window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
             }
+            
+            function renderMessage(){}
 
             function stop_seguiutente(){
                 window.location.href="{{url_for('stop_segui', id_profilo_da_stop_seguire=ID)}}";
@@ -234,6 +282,56 @@
 
             function chiudi_search(){
                 $(".search-box").removeClass("click");
+                $(".btn-sidebar").removeClass("selected");
+            }
+
+            function send_comment(obj){
+                idPost = $(obj).parent().parent().parent().parent().find(".post-comment-selected").attr("id");
+
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "{{url_for('post_comment')}}",
+                    data: {
+                        post_id: idPost,
+                        id_provenienza: document.getElementById("c1").value,
+                        text: document.getElementById("input-bar").value
+                    },
+                    success:function(){
+                        document.getElementById("input-bar").value = "";
+                        $.ajax(
+                            {
+                                type: "GET",
+                                url: "{{url_for('post_comment')}}",
+                                data: {
+                                    post_id: idPost
+                                },
+                                success:function(data){
+                                    var d = data.slice(-1);
+                                    d = d[0];
+                                    $(".comments").append(`
+                                        <div class="comment">
+                                            <div class="commenter-info">
+                                                <img src="${d[PathImmagineProfilo]}" alt="" class="user-icon">
+                                                <a href="/profile/${d["IDProfilo"]}"><p class="nome-commenter">
+                                                    ${d["Nome"]} ${d["Cognome"]}
+                                                </p></a>
+                                            </div>
+                                            <div class="comment-text">
+                                                ${d["text"]}
+                                            </div>
+                                        </div>`
+                                    )
+                                }
+                            }
+                        );
+                    }
+                }
+            );
+            }
+
+            function close_comment(){
+                $(".comment-overlay").addClass("d-none");
             }
         </script>
         {% block script %}
