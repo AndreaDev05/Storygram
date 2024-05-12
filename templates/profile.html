@@ -3,6 +3,61 @@
 
 {% block content %}
 
+<div class="vw-100 vh-100 fixed-top visualizzaizone-seguiti-follower d-none">
+    <div class="visualizzaizone-seguiti-follower-box">
+        <div class="row intestazione-box">
+                <div class="col titolo">
+                    <span id="intestazione"></span>
+                </div>
+                <div class="col-4 close">
+                    <button class="btn" onclick="chiusura()">
+                        <img class="close-icon self-align-end" src alt="close-button" height="24px" width="24px">
+                    </button>
+                </div>
+            <div class="col-12 w-100 mt-1">
+                <div class="row">
+                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
+                        <div class="row">
+                            <div class="col-1 contact-user-profile-img">
+                                <img class="user-icon" src alt="" height="24px" width="24px">
+                            </div>
+                            <div class="col contact-user-name">
+                                {{ nomeUtente }}
+                                Nome Utente
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
+                        <div class="row">
+                            <div class="col-1 contact-user-profile-img">
+                                <img class="user-icon" src alt="" height="24px" width="24px">
+                            </div>
+                            <div class="col contact-user-name">
+                                {{ nomeUtente }}
+                                Nome Utente
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
+                        <div class="row">
+                            <div class="col-1 contact-user-profile-img">
+                                <img class="user-icon" src alt="" height="24px" width="24px">
+                            </div>
+                            <div class="col contact-user-name">
+                                {{ nomeUtente }}
+                                Nome Utente
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- div per la visualizzaizone di un profilo-->
 <div class="row info-user">
     <!-- div per contenere l'immaigne del profilo-->
@@ -24,7 +79,7 @@
                     Post
                 </span>
             </div>
-            <div class="col profile-data align-self-end align-self-sm-center">
+            <div class="col profile-data align-self-end align-self-sm-center" id="Followers">
                 <span class="numero-dati"> <!-- numero di seguaci dell'utente -->
                     {{seguaci}}
                 </span><br>
@@ -32,7 +87,7 @@
                     Followers
                 </span>
             </div>
-            <div class="col profile-data align-self-end align-self-sm-center">
+            <div class="col profile-data align-self-end align-self-sm-center" id="Seguiti">
                 <span class="numero-dati"> <!-- numero di seguiti dell'utente-->
                     {{seguiti}}
                 </span><br>
@@ -75,5 +130,25 @@
     <label class="title-post" for=""><b>POST</b></label>
 </div>
 
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    function chiusura(){
+        $(".visualizzaizone-seguiti-follower").addClass("d-none");
+    }
+
+    $("#Seguiti").on("click",function(){
+        $(".visualizzaizone-seguiti-follower").removeClass("d-none");
+        $("#intestazione").text("Seguiti");
+    });
+
+    $("#Followers").on("click",function(){
+        $(".visualizzaizone-seguiti-follower").removeClass("d-none");
+        $("#intestazione").text("Followers");
+    });
+</script>
 
 {% endblock %}

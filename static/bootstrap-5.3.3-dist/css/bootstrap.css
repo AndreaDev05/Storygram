@@ -75,6 +75,9 @@
   --url-icon-send: url("../../icons/send_icon_light.svg");
   --url-icon-send-focus: url("../../icons/send_focus_icon_light.svg");
 
+  --url-icon-close: url("../../icons/close_light.svg");
+  --url-icon-close-hover: url("../../icons/close_hover_light.svg");
+
   /*colore messaggi*/
 
   --bs-message-remote: #FF9700;
@@ -148,6 +151,9 @@
 
   --url-icon-send: url("../../icons/send_icon_dark.svg");
   --url-icon-send-focus: url("../../icons/send_focus_icon_dark.svg");
+
+  --url-icon-close: url("../../icons/close_dark.svg");
+  --url-icon-close-hover: url("../../icons/close_hover_dark.svg");
 
   /*colore messaggi*/
 
@@ -3031,6 +3037,16 @@ textarea.form-control-lg {
   background-repeat: no-repeat;
 }
 
+.close-icon{
+  content: var(--url-icon-close);
+  background-repeat: no-repeat;
+}
+
+.close-icon:hover{
+  content: var(--url-icon-close-hover);
+  background-repeat: no-repeat;
+}
+
 .keyboard-icon{
   content: var(--url-icon-keyboard);
   background-repeat: no-repeat;
@@ -3117,13 +3133,82 @@ textarea.form-control-lg {
   margin-right: 0.83vw
 }
 
+.visualizzaizone-seguiti-follower{
+  background-color: rgba(0, 0, 0, .25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.visualizzaizone-seguiti-follower-box{
+  height:64.81vh;
+  width: 20.83vw;
+  background-color: var(--bs-body-bg);
+  border-radius: 12px;
+}
+
+.visualizzaizone-seguiti-follower-box .intestazione{
+  font-size: 28px;
+}
+
+.intestazione-box{
+  margin-right: 12px;
+  margin-left: 12px;
+  height: 40px;
+  border: 0px solid rgba(var(--bs-outline-rgb),.25);
+  border-bottom-width: 1px;
+  display: flex;
+  font-size: 28px;
+}
+
+.intestazione-box .titolo{
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.intestazione-box .close{
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
 .stories{
   overflow-y: hidden;
   max-height: 100%;
 }
 
+body:has(.click) .text-sidebar{
+  display: none;
+}
+body:has(.click) .sidebar{
+  padding-left: 12px;
+}
+body:has(.click) .icon-sidebar{
+  margin: 0px;
+}
+
 .story-text{
   font-size: 18px;
+}
+
+.search-box{
+  width:18.44vw;
+  height: 100vh;
+  position:absolute;
+  top:0;
+  left:-18.44vw;
+  transition: left 2s;
+}
+
+.search-bar-box{
+  height: 7.40vh;
+}
+
+.close-icon-search{
+  height: 4.81vh;
+}
+
+.search-box.click{
+  left: 2.5vw;
 }
 
 .story-user{
@@ -3274,6 +3359,12 @@ textarea.form-control-lg {
   justify-content: start;
 }
 
+.user-box{
+  height: calc(100vh - 7.40vh - 4.81vh);
+  padding-top:20px;
+  overflow-y:auto;
+}
+
 .bar{
   height: calc(100% - 20px);
   width: calc(100% - 50px);
@@ -3375,6 +3466,7 @@ textarea.form-control-lg {
 .icon-sidebar{
   margin-left: 6.2vw;
   margin-right: 0.78vw;
+  transition: margin 2s;
 }
 
 .numero-dati{
@@ -8164,6 +8256,7 @@ textarea.form-control-lg {
 
 .w-sidebars{
   width:20.9%;
+  transition: width 2s;
 }
 
 .mw-100 {
@@ -10329,8 +10422,6 @@ textarea.form-control-lg {
   .profile-info-post-box,.desc-post,.action-icon{
     width: 100% !important;
   }
-
-
 }
 
 @media(max-width: 760px){
@@ -10379,7 +10470,7 @@ textarea.form-control-lg {
   .stories:has(.contact){
     height: calc(100vh - 7.73vh) !important;
   }
-  .stories:has(.box-input){
+  body:has(.box-input) .stories{
     display:none;
   }
   .stories{
