@@ -232,10 +232,6 @@ questa route permette di visualizzare i follower  di un determinato profilo
 
 questa route permette di visualizzare i seguiti  di un determinato profilo 
 
-- `@server.route('/search/', methods=['GET', 'POST'])`
-
-questa route permette di ricercare gli utenti presenti in storygram, effettua una ricerca per nome, cognome ma anche periodo storico, per rendere più semplice ed efficace la ricerca di un utente, di cui magari si ricorda solo il periodo storico ma non il nome completo, o viceversa 
-
 - `@server.route('/post/create/', methods=['GET', 'POST'])`
 
 route che permette la creazione di un nuovo post, al momento della creazione viene chiesto di inserire un immagine e un eventuale descrizione. La gestione delle immagini e dei tipi di file permessi, viene descritta successivamente, in questa documentazione, nell’apposita sezione “gestione delle imagini uplodate”
@@ -252,9 +248,11 @@ questa route invece permette di mettere o togliere un like ad un post
 
 questa route permette la gestione della ricezione e dell’invio dei messaggi tra utenti 
 
-- `@server.route('/segui/<int:id_profilo_da_seguire>', methods=['GET', 'POST'])` e `@server.route('/stop_segui/<int:id_profilo_da_stop_seguire>', methods=['GET', 'POST'])`
+- `@server.route('/segui/<int:id_profilo_da_seguire>', methods=['GET', 'POST'])`  e `@server.route('/stop_segui/<int:id_profilo_da_stop_seguire>', methods=['GET', 'POST'])`
 
-queste due route infine, permettono di seguire e smettere di seguire un profilo 
+queste route servono infine per iniziare/smettere di seguire un determinato utente 
+
+per la funzionalità di mettere mi piace ad un post e cercare un utente, abbiamo utilizzato Ajax per rendere più dinamico il sito, senza dover aggiornare interamente le pagine, per queste richieste dinamiche e veloci che influenzano una parte poco significativa della pagina e che renderebbe poco dinamico e prestante il sito se la pagina viene aggiornata continuamente tutta, qui sotto possiamo vedere il codice usato: 
 
 ### Gestione delle immagini uplodate
 
@@ -330,9 +328,16 @@ questo per motivi di compatibilità del sito e di sicurezza, per evitare che non
 
 ## Front-End
 
-## Team di Progetto:
+## Possibili miglioramenti futuri
 
-- De Panni Andrea: DB-Manager e BE-Manager
-- Gambardella Giovanni Antonio: FE-Manager, responsabile debug e aiuto BE
-- Matteazzi Andrea: project-Manager, responsabile infrastrutture, aiuto BE
-- Toso Elia: responsabile presentazioni
+- 
+
+## Conclusioni sulla progettazione e gestione di progetto
+
+La progettazione del nostro progetto si è dimostrata efficace, soprattutto per quanto riguarda la gestione del tempo attraverso il gantt, nonostante le risorse temporali fossero limitate. Inoltre, come avevamo previsto nell'analisi dei rischi nel project charter, abbiamo affrontato ostacoli dovuti a problemi di salute di un membro del team e alla mancanza di collaborazione di un altro membro. Tuttavia, grazie alla comunicazione costante e alla capacità di adattamento del team, siamo riusciti a mitigare i ritardi, ridistribuendo il carico di lavoro e mantenendo elevati standard di qualità.
+
+Nonostante le sfide incontrate, siamo riusciti a rispettare i limiti di budget imposti per l'acquisto di infrastrutture software e hardware, ottenendo risultati eccellenti. Questo successo è stato possibile grazie alla pianificazione accurata, alla collaborazione efficace e alla determinazione nel perseguire gli obiettivi prefissati.
+
+Siamo quindi molto soddisfatti del risultato del Progetto e propensi a migliorarlo con le possibili miglioramenti futuri evidenziati, non ancora effettuati. 
+
+##
