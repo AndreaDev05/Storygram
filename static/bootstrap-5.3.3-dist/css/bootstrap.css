@@ -10376,6 +10376,9 @@ textarea.form-control-lg {
     padding-left: 0px;
     overflow: hidden;
   }
+  .stories:has(.contact){
+    height: calc(100vh - 7.73vh) !important;
+  }
   .stories{
     display: flex;
     flex-direction: row ;
@@ -10383,6 +10386,9 @@ textarea.form-control-lg {
     flex-wrap: nowrap;
     align-items: center;
     overflow-x: scroll;
+  }
+  body:has(.main-messages-box) .content{
+    display: none !important;
   }
   .story-user{
     width: auto;
@@ -12796,6 +12802,11 @@ textarea.form-control-lg {
   font-size: 18px;
 }
 
+.desc-post{
+  margin-top: 15px !important;
+  margin-bottom: 10px !important;
+
+}
 
 .img-post-box{
   display: flex;
@@ -12815,6 +12826,15 @@ textarea.form-control-lg {
 .post-name{
   display: inline-block;
   font-size: 18px;
+  margin:0px;
+  margin-left: 15px;
+  margin-bottom: 15px;
+  height:24px;
+}
+
+.data-post{
+  font-size: 18px ;
+  margin-bottom: 15px;
 }
 
 #descrizione_modifica {

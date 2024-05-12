@@ -17,9 +17,14 @@
         {% if counter < 3 %}
             <!-- Visualizza post seguiti -->
             <div class="post">
-                <div class="profile-info-post-box">
-                    <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
-                    <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a> <p>il {{post['Data']}}</p>
+                <div class="row profile-info-post-box flex-column flex-sm-row">
+                    <div class="col p-0 d-flex align-items-start">
+                        <img class="rounded-circle img-post" src="{{post['PathImmagineProfilo']}}" alt="imm_profilo" width="24px" height="24px"> 
+                        <a href="{{url_for('profile', id=post['IDProfilo'])}}"><p class="post-name">{{post["Nome"]}} {{post["Cognome"]}}</p></a>
+                    </div> 
+                    <div class="col p-0 text-start text-sm-end">
+                        <p class="data-post">il {{post['Data']}}</p>
+                    </div>
                 </div>
                 <div class="img-post-box">
                     <img src="{{post['PercorsoFile']}}" alt="imm_post">
