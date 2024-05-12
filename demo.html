@@ -39,9 +39,6 @@
 						<p>
 							<small>Created by Depanni Andrea, Gambardella Giovanni, Matteazzi Andrea e Toso Elia</small>
 						</p>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
 					</section>
 
 					<!-- seconda slide della presentaizone del prodotto -->
@@ -51,9 +48,6 @@
 							un social network dove personaggi di periodi storici diversi si incontrano e scambiano idee, 
 							commenti e reazioni in un mondo moderno come quello dei social network
 						</p>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
 					</section>
 					<!-- da qua la presentazioen del prodotto continua fino alla fine con la presentazioen live del prodotto (il sito/webapp)-->
 				</section>
@@ -76,9 +70,6 @@
 						<h2>Il Database</h2>
 						<p>come e dove memorizziamo i dati</p>
 						<br>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
 					</section>
 					<section>
 						<h2>Basement Level 1</h2>
@@ -88,9 +79,6 @@
 						<h2>Basement Level 2</h2>
 						<p>That's it, time to go back up.</p>
 						<br>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
 					</section>
 				</section>
 
@@ -101,9 +89,6 @@
 						<h2>Il Back-End</h2>
 						<p>quello che c'è dietro storyrgam</p>
 						<br>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
 					</section>
 					<section>
 						<h2>Scritto Con Flask</h2>
@@ -132,7 +117,7 @@
 					</section>
 					<section>
 						<h2>creazione di un nuovo utente</h2>
-						<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="|4,8-11|17|22-24">
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="">
 							import os
 
 							# funzione per creare la cartella dedicata al nuovo utente al momento della registrazione 
@@ -145,10 +130,39 @@
 								except Exception as e:
 									print(e)
 						</code></pre>
+					</section>
+					<section>
+						<h2>Upload delle immagini </h2>
+						<p>gestione dei media caricati dagli utenti</p>
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="">
+							from flask import  jsonify, flash 
+							from werkzeug.utils import secure_filename # usato per la sicurezza dei file caricati dall'utente
+							import os # usato per uplodare il file caricato nell'utente, nel server 
+							
+							ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'} # estensioni permesse dei file caricati dall'utente (da definire)
+							
+							
+							# funzione che controlla se l'utente ha caricato un file con estensione permessa 
+							def allowed_file(filename):
+								return '.' in filename and \
+									   filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+							
+							def uploadImmagineProfilo(file, server, session):
+								
+								print("debug")
+								server.config['UPLOAD_FOLDER'] = f"static/utenti/{session['IDUtente']}/ImmagineProfilo" # imposto la cartella di upload per l'immagine profilo
+							
+								# controllo se l'utente ha inserito effettivamente un file (i browser di solito se non viene isnerito un file, ne agigungono uno vuoto senza nome)
+								if file.filename == '':
+									print('Nessun file Selezionato') # debug
+									return jsonify({'error': 'Nessun file Selezionato'}), 400
+								if file and allowed_file(file.filename): # se è stato caricato il file lo carico della giusta cartella 
+									print(f'File caricato: {file.filename}') # debug 
+									filename = secure_filename(file.filename)
+									file.save("./" + os.path.join(server.config['UPLOAD_FOLDER'], filename))
+									return  os.path.join(server.config['UPLOAD_FOLDER'], filename) # ritorno il path dell'immagine profilo poi da aggiornare nel db 							
+						</code></pre>
 						<br>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
 					</section>
 				</section>
 
@@ -159,9 +173,6 @@
 						<h2>Il Front-End</h2>
 						<p>la bellezza di storygram che diventa esperienza </p>
 						<br>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
 					</section>
 					<section>
 						<h2>Basement Level 1</h2>
@@ -171,9 +182,6 @@
 						<h2>Basement Level 2</h2>
 						<p>That's it, time to go back up.</p>
 						<br>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
 					</section>
 				</section>
 
@@ -186,9 +194,6 @@
 						<h2>La progettazione</h2>
 						<p>una grande progettazione per un grande progetto</p>
 						<br>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
 					</section>
 					<section>
 						<h2>Basement Level 1</h2>
@@ -198,10 +203,17 @@
 						<h2>Basement Level 2</h2>
 						<p>That's it, time to go back up.</p>
 						<br>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
 					</section>
+				</section>
+
+<!-------------------------------------------------------------------------------------------------------------------------------------------------------------->
+				
+				<!-- fine della presentazione del progettto  -->
+				<section>
+					<h3>pronti alla nuova idea di social?</h3>
+					<p>
+						<small>StoryGram, il social dove le generazioni si incontrano</small>
+					</p>
 				</section>
 
 <!-------------------------------------------------------------------------------------------------------------------------------------------------------------->
