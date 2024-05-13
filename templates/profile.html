@@ -141,6 +141,7 @@
         $(".visualizzaizone-seguiti-follower").addClass("d-none");
     }
 
+    // funzione per ottenere i profili seguiti da questo profilo 
     $("#Seguiti").on("click", function() {
         // ottengo l'id del profilo di cui si vuole sapere chi segue, dall'url della pagina
         var profileId = window.location.pathname.split('/').filter(Boolean).pop();  
@@ -151,7 +152,7 @@
             url: "{{url_for('get_followed_profiles')}}", 
             data: { profile_id: profileId }, 
             success: function(response) { 
-                // Aggiorno la visualizzazione dei seguiti con i dati ricevuti dalla risposta Ajax
+                // Aggiorno la visualizzazione dei profili seguiti da questo profilo 
                 $(".visualizzazione-seguiti-follower").html(response); 
                 $("#intestazione").text("Seguiti"); 
             },
@@ -161,11 +162,26 @@
         });
     });
 
-
+    // funzione per ottenere i profili che seguono questo profilo
     $("#Followers").on("click",function(){
-        $(".visualizzaizone-seguiti-follower").removeClass("d-none");
-        $("#intestazione").text("Followers");
+    // ottengo l'id del profilo di cui si vuole sapere chi segue, dall'url della pagina
+    var profileId = window.location.pathname.split('/').filter(Boolean).pop();  
+
+    // faccio una richiesta al server con ajax per ottenere i profili follower
+    $.ajax({
+        type: "GET", 
+        url: "{{ url_for('get_followers_profiles') }}", 
+        data: { profile_id: profileId }, 
+        success: function(response) { 
+            // Aggiorno la visualizzazione dei profili che seguono questo profilo  
+            $(".visualizzazione-seguiti-follower").html(response); 
+            $("#intestazione").text("Followers"); 
+        },
+        error: function(xhr, status, error) { 
+            console.error("Errore nella richiesta Ajax:", error); // se avviene un errore 
+        }
     });
+});
 </script>
 
 {% endblock %}

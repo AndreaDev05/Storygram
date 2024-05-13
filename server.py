@@ -607,13 +607,28 @@ def get_followed_profiles():
                 WHERE Segue.Seguace = {profile_id};
                 '''
         lista_seguiti = executeQuery(query)
-        print ( lista_seguiti)
-        print (jsonify(lista_seguiti))
+        print ( lista_seguiti) # debug
+        print (jsonify(lista_seguiti)) # debug 
         return jsonify(lista_seguiti)
     else: 
         return redirect("http://storygram.it/login/", code=302)
-     
 
+@server.route('/get_followers_profiles', methods=['GET'])
+def get_followers_profiles():
+    if(session.get("logged_in")):
+        profile_id = request.args.get('profile_id') # ottengo dal get l'id del profilo di cui si vogliono ottenere i seguaci
+        query = f'''
+                SELECT Profilo.*
+                FROM Segue
+                JOIN Profilo ON Segue.Seguace = Profilo.IDProfilo
+                WHERE Segue.Seguito = {profile_id};
+                '''
+        lista_seguaci = executeQuery(query)
+        print ( lista_seguaci) # debug
+        print (jsonify(lista_seguaci)) # debug 
+        return jsonify(lista_seguaci)
+    else:
+        return redirect("http://storygram.it/login/", code=302)
 
 if __name__ == "__main__":
 
