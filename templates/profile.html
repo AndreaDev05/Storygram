@@ -15,7 +15,10 @@
                     </button>
                 </div>
             <div class="col-12 w-100 mt-1">
-                <div class="row">
+                <div class="row" id="row-seguiti-follower">
+
+
+                    <!--
                     <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
                         <div class="row">
                             <div class="col-1 contact-user-profile-img">
@@ -27,31 +30,10 @@
                             </div>
                         </div>
                     </div>
+                    -->
 
 
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -126,9 +108,58 @@
     
 </div>
 <!-- div per contenere tutti i post del profilo -->
+<!--
+        <div class="row row-posts w-100">
+            <div class="col col-post">
+                <img src="{{url_for('static',filename='images/image1_carousel.png')}}" alt="" width="100%" height="100%">
+            </div>
+            <div class="col col-post">
+                <img src="{{url_for('static',filename='images/image1_carousel.png')}}" alt="" width="100%" height="100%">
+            </div>
+            <div class="col col-post">
+                <img src="{{url_for('static',filename='images/image1_carousel.png')}}" alt="" width="100%" height="100%">
+            </div>
+        </div>
+-->
 <div class="row post-user">
     <label class="title-post" for=""><b>POST</b></label>
-    
+    <div class="post-user-box mh-100">
+        {% if is_owner == True or is_following == True or privacy == 0   %}
+            <!-- profilo accessibile -->
+            {% for post in user_posts %}
+
+                {% if loop.index0 % 3 == 0 %}
+                    <div class="row row-posts w-100">
+                {% endif %}
+
+                    <div class="col col-post">
+                        <img src="{{ post['PercorsoFile'] }}" alt="post-utente" width="100%" height="100%">
+                    </div>
+
+                {% if loop.index0 % 3 == 2  %}
+                    </div>
+                {% endif %}
+                
+            {% endfor %}
+            
+            {% if num_buchi != 0 %}
+                {% for n in range(num_buchi) %}
+                <div class="col col-post">
+                    <!-- div vuoto per riempire gli spazzi vuoti delle row da 3 di post -->
+                </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+
+
+
+        {% else %}
+            <!-- profilo privato -->
+        {% endif %}
+
+
+        
+    </div>
 </div>
 
 
@@ -138,6 +169,7 @@
 
 <script>
     function chiusura(){
+        $("#row-seguiti-follower").html("");
         $(".visualizzaizone-seguiti-follower").addClass("d-none");
     }
 
@@ -145,16 +177,33 @@
     $("#Seguiti").on("click", function() {
         // ottengo l'id del profilo di cui si vuole sapere chi segue, dall'url della pagina
         var profileId = window.location.pathname.split('/').filter(Boolean).pop();  
-    
+        
         // faccio una richiesta al server con ajax 
         $.ajax({
             type: "GET", 
             url: "{{url_for('get_followed_profiles')}}", 
             data: { profile_id: profileId }, 
             success: function(response) { 
-                // Aggiorno la visualizzazione dei profili seguiti da questo profilo 
-                $(".visualizzazione-seguiti-follower").html(response); 
-                $("#intestazione").text("Seguiti"); 
+                response.forEach(d => {
+                $("#row-seguiti-follower").append(`
+                    <div class="col-12 contact" id="${d["IDProfilo"]}">
+                        <div class="row">
+                            <div class="col-1 contact-user-profile-img">
+                                <img class="rounded-circle" src="${d["PathImmagineProfilo"]}" alt="" height="44px" width="44px">
+                            </div>
+                            <div class="col contact-user-name">
+                                <a href="/profile/${d["IDProfilo"]}"">
+                                <p class="nome-commenter">
+                                    ${d["Nome"]} ${d["Cognome"]}
+                                </p></a>
+                            </div>
+                        </div>
+                    </div>`
+                    )
+                });
+                $("#intestazione").html("Seguiti");
+                $(".visualizzaizone-seguiti-follower").removeClass("d-none");
+
             },
             error: function(xhr, status, error) { 
                 console.error("Errore nella richiesta Ajax:", error); // se avviene un errore 
@@ -173,9 +222,27 @@
         url: "{{ url_for('get_followers_profiles') }}", 
         data: { profile_id: profileId }, 
         success: function(response) { 
-            // Aggiorno la visualizzazione dei profili che seguono questo profilo  
-            $(".visualizzazione-seguiti-follower").html(response); 
-            $("#intestazione").text("Followers"); 
+
+            response.forEach(d => {
+                $("#row-seguiti-follower").append(`
+                <div class="col-12 contact" id="${d["IDProfilo"]}">
+                    <div class="row">
+                        <div class="col-1 contact-user-profile-img">
+                            <img class="rounded-circle" src="${d["PathImmagineProfilo"]}" alt="" height="44px" width="44px">
+                        </div>
+                        <div class="col contact-user-name">
+                            <a href="/profile/${d["IDProfilo"]}">
+                            <p class="nome-commenter">
+                                ${d["Nome"]} ${d["Cognome"]}
+                            </p></a>
+                        </div>
+                    </div>
+                </div>`
+                )
+            });
+            $("#intestazione").html("Followers");
+            $(".visualizzaizone-seguiti-follower").removeClass("d-none");
+
         },
         error: function(xhr, status, error) { 
             console.error("Errore nella richiesta Ajax:", error); // se avviene un errore 

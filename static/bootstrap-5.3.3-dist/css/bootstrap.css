@@ -3595,11 +3595,34 @@ body:has(.click) .icon-sidebar{
 }
 
 .post-user{
+  display:flex;
+  justify-content: center;
   height: auto;
   border-top-style: solid;
   border-top-width: 1px;
   border-top-color: rgba(var(--bs-outline-rgb),.25);
 
+}
+
+.box-modifica{
+  overflow-y: auto;
+}
+
+.post-user-box{
+  overflow-y: auto;
+  height: 49.07vh;
+}
+
+.row-posts{
+  display : flex;
+  flex-direction: row;
+  margin-top: 12px;
+  margin-bottom:12px;
+  height: 30.83vh;
+}
+
+.col-post{
+  width: 33.3%;
 }
 
 .profile-data{
@@ -10571,6 +10594,18 @@ body:has(.click) .icon-sidebar{
     transition: none;
     display:none;
   }
+  body:has(.form-group) .stories{
+    display: none;
+  }
+  .post-user-box{
+    height: calc(56.22vh - 7.73vh - 7.73vh) !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .message-box{
+    height: calc(100vh - 7.41vh - 11.11vh - 7.30vh);
+  }
   .comment-overlay{
     align-items: end;
   }
@@ -10613,8 +10648,17 @@ body:has(.click) .icon-sidebar{
   body:has(.click) .content,.stories{
     display:none;
   }
+  body:has(.main-messages-box) .content{
+    height: calc(100vh - 7.73vh) !important;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    overflow: hidden;
+  }
   body:has(.click) .search-box{
     display:block;
+    position: fixed;
   }
   body:has(.click) .sidebar{
     padding-left:0px;
@@ -10648,12 +10692,28 @@ body:has(.click) .icon-sidebar{
     display: none;
   }
   .content{
-    height: calc(100vh - 7.73vh - 15.45vh) !important;;
+    height: calc(100vh - 7.73vh - 15.45vh) !important;
     margin-left: 0px;
     margin-right: 0px;
     padding-right: 0px;
     padding-left: 0px;
     overflow: hidden;
+  }
+  .visualizzaizone-seguiti-follower-box{
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0px;
+  }
+  body:has(.post-user-box) .content{
+    height: calc(100vh - 7.73vh) !important;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    overflow: hidden;
+  }
+  body:has(.form-group) .content,.box-modifica{
+    height: calc(100vh - 7.73vh) !important;
   }
   .stories:has(.contact){
     height: calc(100vh - 7.73vh) !important;
@@ -10769,6 +10829,11 @@ body:has(.click) .icon-sidebar{
   }
   .vh-sm-100{
     height: auto !important;
+  }
+  .close-btn-message{
+    display: flex !important;
+    align-content:center;
+    justify-content: center;
   }
 
 }
@@ -13103,6 +13168,10 @@ body:has(.click) .icon-sidebar{
 
 .action-icon{
   width: 41.7vw;
+}
+
+.close-btn-message{
+  display: none;
 }
 
 .post {

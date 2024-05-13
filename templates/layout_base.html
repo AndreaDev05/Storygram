@@ -13,7 +13,7 @@
 {% endmacro %}
 
 <!DOCTYPE html>
-<html lang="it" data-bs-theme="light">
+<html lang="it" data-bs-theme="{{ theme }}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -108,7 +108,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 user-box">
+                <div class="col-12 user-box" id="lista-utenti">
+                    <!--
                     <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
                         <div class="row">
                             <div class="col-1 contact-user-profile-img">
@@ -120,72 +121,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
-                        <div class="row">
-                            <div class="col-1 contact-user-profile-img">
-                                <img class="user-icon" src alt="" height="24px" width="24px">
-                            </div>
-                            <div class="col contact-user-name">
-                                {{ nomeUtente }}
-                                Nome Utente
-                            </div>
-                        </div>
-                    </div>
+                    -->
                 </div>
             </div>
         </div>
         <div class="vw-100 vh-100 fixed-top comment-overlay d-none">
             <div class="comment-box">
-                <div class="row m-auto mh-100 overflow-hidden">
+                <div class="row m-auto h-100 mh-100 overflow-hidden">
                     <div class="col post-comment-selected" id="">
                         <img class="img-comment" src alt="">
                     </div>
                     <div class="col">
-                        <div class="row m-auto">
+                        <div class="row h-100 m-auto">
                             <div class="col-12 info-user-post">
                                 <div class="row h-100">
                                     <div class="col intestazione-mobile">
@@ -204,7 +151,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 comments">
+                            <div class="col-12 h-100 comments">
                             </div>
                             <div class="col-12 comment-bar-col">
                                 <div class="row bar comment-bar">
@@ -243,7 +190,7 @@
 
             // per il redirect alla pagina di un profilo 
             function renderProfile(){
-                window.location.href="{{url_for('profile', id=ID)}}";
+                window.location.href="{{url_for('profile', id=session_userid)}}";
             }
 
             // per effettuare il logout
@@ -256,30 +203,77 @@
                 window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
             }
             
-            function renderMessage(){}
+            // per renderizzare un messaggio 
+            function renderMessage(){
+                window.location.href="{{url_for('segui', id_profilo_da_seguire=ID)}}";
+            }
 
+            // per smettere di seguirre un utente
             function stop_seguiutente(){
                 window.location.href="{{url_for('stop_segui', id_profilo_da_stop_seguire=ID)}}";
             }
 
+            // per andare alla pagina di modifica profilo 
             function modificaprofilo(){
                 window.location.href="{{url_for('modifica_profilo', id=ID)}}";
             }
 
+            // per andare alla pagina per creare un post
             function crea(){
                 window.location.href="{{url_for('create_post')}}"
             }
 
+            // per andare alla pagina per cercare un utente 
             function cerca_utente(){
                 //window.location.href="{{url_for('search')}}"
                 $(".search-box").addClass("click");
             }
 
+            // per chiudere la pagian di ricerca 
             function chiudi_search(){
                 $(".search-box").removeClass("click");
                 $(".btn-sidebar").removeClass("selected");
             }
 
+            $('.search-bar').keypress(function(event){
+	
+                if($(document).ready()){
+                    var keycode = (event.keyCode ? event.keyCode : event.which);
+                    if(keycode == '13'){
+                        
+                        $.ajax(
+                        {
+                            type: "POST",
+                            url: "{{url_for('search')}}",
+                            data: {
+                                input_cerca_utente: $(".input-bar").val()
+                            },
+                            success:function(profili){
+                                data.forEach(d => {
+                                    $("#lista-utenti").append(`
+                                    <div class="col-12 contact" id="${d["IDProfilo"]}">
+                                        <div class="row">
+                                            <div class="col-1 contact-user-profile-img">
+                                                <img class="rounded-circle" src="${d["PathImmagineProfilo"]}" alt="" height="44px" width="44px">
+                                            </div>
+                                            <div class="col contact-user-name">
+                                                <a href="/profile/${d["IDProfilo"]}">
+                                                <p class="nome-commenter">
+                                                    ${d["Nome"]} ${d["Cognome"]}
+                                                </p></a>
+                                            </div>
+                                        </div>
+                                    </div>`
+                                    )
+                                });
+                            }
+                        });
+                        
+                    }
+                }
+            });
+
+            // per creare un commento 
             function send_comment(obj){
                 idPost = $(obj).parent().parent().parent().parent().find(".post-comment-selected").attr("id");
 
@@ -325,7 +319,9 @@
             );
             }
 
+            // per chiudere la pagina dei commenti
             function close_comment(){
+                $(".comments").html("");
                 $(".comment-box").removeClass("opened");
                 if(screen.width <= 575)
                     setTimeout(function(){

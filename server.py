@@ -29,7 +29,7 @@ server.secret_key = credentials.chiave_segreta
 @server.route('/')
 def home():
     if session.get('logged_in'):
-
+        
         # query per calcolare i psot in tendenza 
         query_trending = f'''
             SELECT Post.*, 
@@ -105,9 +105,10 @@ def home():
         print(index_mipiace)
 
         # carico la home con i relativi dati 
-        return render_template("home.html", ID=session['IDUtente'], index_mipiace=index_mipiace, lista_post=combined_posts, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False])
+        return render_template("home.html", ID=session['IDUtente'], index_mipiace=index_mipiace, lista_post=combined_posts, names=["paolo", "bellofigo", "nano sporcaccione"], paths=["", "", ""], seen_s=[False, False, False],session_userid=session['IDUtente'], theme = session["theme"])
     else:
-        return render_template('login.html')  
+        session["theme"] = "light"
+        return render_template('login.html', theme = session["theme"])  
 
 
 # ------------- route per il login ---------------------- #
@@ -117,7 +118,7 @@ def login():
         if session.get('logged_in'):
             return redirect("https://storygram.it", code=302)
         else:
-            return render_template('login.html')
+            return render_template('login.html', theme = session["theme"])
     if request.method == "POST":
         # Recupera i dati inviati dal form
         codiceUtente = request.form['codiceUtente']
@@ -138,7 +139,7 @@ def login():
 
             return redirect("https://storygram.it", code=302)
         else:                                                           
-            return render_template("login.html")
+            return render_template("login.html", theme = session["theme"])
 
     else:
         return jsonify({"message": "Metodo non consentito"}), 405 # in caso di metodo non consentito do errore
@@ -155,7 +156,7 @@ def register():
                 diz = json.load(file)
                 UltimoCodiceUtente = diz["UltimoCodiceUtente"] + 1
                 file.close()
-            return render_template('registrazione.html',codice=UltimoCodiceUtente)  # Redirect alla pagina di registrazione
+            return render_template('registrazione.html',codice=UltimoCodiceUtente, theme = session["theme"])  # Redirect alla pagina di registrazione
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         nome = request.form['Nome']
@@ -201,7 +202,7 @@ def register():
 @server.route('/recovery/', methods=['GET', 'POST'])
 def recovery():
     if request.method == 'GET':
-            return render_template('recupero.html')
+            return render_template('recupero.html', theme = session["theme"])
     elif request.method == 'POST':
         # Recupera i dati inviati dal form
         codice_utente = request.form['CodiceUtente']
@@ -224,7 +225,7 @@ def recovery():
 def recovery_reset():
     if session['CodiceUtente']:
         if request.method == 'GET':
-            return render_template('reset_password.html')
+            return render_template('reset_password.html', theme = session["theme"])
         elif request.method == 'POST':
             # Recupera i dati inviati dal form
             nuova_password = request.form['NuovaPassword']
@@ -256,17 +257,17 @@ def logout():
             # elimino i dati di sessione 
             session.clear()
             # reindirizzo alla pagina principale
-            return redirect("http://storygram.it/login/", code=302)
+            return redirect("http://storygram.it/", code=302)
     else:
-        return redirect("http://storygram.it/login/", code=302)
+        return redirect("http://storygram.it/", code=302)
 
 
 # ---------------- route per la visualizzare un profilo ---------------------- #
-def _renderProfile(id : int, profile_info : list, is_owner : bool, is_following : bool):
+def _renderProfile(id : int, profile_info : list, is_owner : bool, is_following : bool, user_posts, num_buchi):
     posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
     user_posts = executeQuery(posts_query)
 
-    return render_template('profile.html', ID=id, session_userid=session['IDUtente'] , is_owner=is_owner, is_following=is_following, nomeUtente=profile_info[0]['Nome'] + " " + profile_info[0]['Cognome'], descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], posts=[user_posts])    
+    return render_template('profile.html', ID=id, num_buchi=num_buchi, session_userid=session['IDUtente'] , is_owner=is_owner, is_following=is_following, nomeUtente=profile_info[0]['Nome'] + " " + profile_info[0]['Cognome'], user_posts=user_posts, descrizione=profile_info[0]['Descrizione'], numeroDiPost=profile_info[0]['NumeroDiPost'], pathImmagineProfilo=profile_info[0]['PathImmagineProfilo'], seguaci=profile_info[0]['Seguaci'], seguiti=profile_info[0]['Seguiti'], privacy=profile_info[0]['Privacy'], theme = session["theme"])    
 
 
 @server.route('/profile/<int:id>/', methods=['GET'])
@@ -277,29 +278,35 @@ def profile(id):
         profile_query = f"SELECT * FROM Profilo WHERE IDProfilo = {id};"
         profile_info = executeQuery(profile_query)
 
+        # query per ottenre i post del profilo 
         posts_query = f"SELECT * FROM Post WHERE IDProfiloProvenienza = {id} ORDER BY Data DESC"
         user_posts = executeQuery(posts_query)
-        
+         
+        # calcolo i buchi possibili da agggiungere alla row formata da 3 post ciascuna 
+        num_buchi = (3 - (len(user_posts) % 3)) % 3
+            
+        # calcolo se l'utnte è il proprietaro, o il profilo è privato
         is_owner = True if(id == session['IDUtente']) else False
         is_private = True if(profile_info[0]['Privacy'] == 1) else False
 
         if is_owner:
-            return _renderProfile(id, profile_info, is_owner, True)
+            return _renderProfile(id, profile_info, is_owner, True, user_posts, num_buchi) # se l'utente è il proprietario lo comunico e renderizzo la pagina 
         else:
             if is_private:
                 
+                # calcolo se l'utente segue il profilo 
                 following_query = executeQuery(f"SELECT * FROM Segue WHERE Seguace = {session['IDUtente']}")
                 for riga in following_query:
                     if riga['Seguito'] == id:
-                        return _renderProfile(id, profile_info, is_owner, is_following=True)
-                return jsonify({"message" : "profilo privato"}) # METTERE BOTTONE PER RICHIESTA DI SEGUIRE IL PROFILO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        return _renderProfile(id, profile_info, is_owner, is_following=True, user_posts=user_posts, num_buchi = num_buchi)
+                return _renderProfile(id, profile_info, is_owner, is_following=False) # se l'utente non segue l'utente privato, non mostro i post 
             else: # profilo pubblico
                 is_following = False
-                following_query = executeQuery(f"SELECT * FROM Segue WHERE Seguace = {session['IDUtente']}")
+                following_query = executeQuery(f"SELECT * FROM Segue WHERE Seguace = {session['IDUtente']}")  # calcolo se lutente segue il profilo 
                 for riga in following_query:
                     if riga['Seguito'] == id:
                         is_following = True
-                return _renderProfile(id, profile_info, is_owner, is_following)
+                return _renderProfile(id, profile_info, is_owner, is_following, user_posts, num_buchi = num_buchi) # renderizzo la pagina dell'utente 
 
     else:
         return redirect("http://storygram.it/login/", code=302)
@@ -315,16 +322,25 @@ def modifica_profilo(id):
             
             if is_owner:
                 print(profile_info['PathImmagineProfilo'])
-                return render_template("profile_modifica.html", ID=id, nome=profile_info['Nome'], cognome=profile_info['Cognome'], descrizione=profile_info['Descrizione'], pathImmagineProfilo=profile_info['PathImmagineProfilo'], privacy=profile_info['Privacy'], periodoStorico=profile_info['PeriodoStorico'])
+                return render_template("profile_modifica.html", ID=id, nome=profile_info['Nome'], cognome=profile_info['Cognome'], descrizione=profile_info['Descrizione'], pathImmagineProfilo=profile_info['PathImmagineProfilo'], privacy=profile_info['Privacy'], periodoStorico=profile_info['PeriodoStorico'],session_userid=session['IDUtente'], theme = session["theme"])
             else:
                 return jsonify({"message": "Forbidden"}), 403  # da definire poi !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         else:
             
+            print("req:",request.form)
+            print("req:",type(request.form['preference']))
+
             if request.form['Privacy'] == "on":
                 Privacy = 1
             else:
                 Privacy = 0
+
+            if request.form['preference'] == "1":
+                session["theme"] = "dark"
+            else:
+                print("sos")
+                session["theme"] = "light"
 
             file = request.files['file']
             if file.filename == '':
@@ -364,7 +380,7 @@ def followers(id):
                 WHERE Segue.Seguito = {id};
         """
         followers_info = executeQuery(query)
-        return render_template('followers.html', followers=followers_info)
+        return render_template('followers.html', followers=followers_info, theme = session["theme"])
         
     else:
         return redirect("http://storygram.it/login/", code=302)
@@ -390,15 +406,15 @@ def following(id):
 # ---------------- route per ricercare un utente ---------------------- #
 @server.route('/search/', methods=['GET', 'POST'])
 def search():
-    if session['logged_in'] == True:
+    if session.get('logged_in') == True:
         if request.method == "GET":
-            return render_template("cerca_utente.html", cerca=False, ID=session['IDUtente'])
+            return render_template("cerca_utente.html", cerca=False, ID=session['IDUtente'], theme = session["theme"])
         else:
             search_text = request.form['input_cerca_utente']
-            profili = executeQuery("SELECT * FROM Utente JOIN Profilo ON IDUtente = IDProfilo WHERE Cognome LIKE '%{search_text}%' OR Nome LIKE '%{search_text}%' OR PeriodoStorico LIKE '%{search_text}%'")
+            profili = executeQuery(f"SELECT IDProfilo, Nome, Cognome, PathImmagineProfilo FROM Utente JOIN Profilo ON IDUtente = IDProfilo WHERE Cognome LIKE '%{search_text}%' OR Nome LIKE '%{search_text}%' OR PeriodoStorico LIKE '%{search_text}%'")
             print("Profili trovati:\n")
             print(profili)
-            return render_template("cerca_utente.html", cerca=True, ID=session['IDUtente'], profili_trovati=profili)
+            return jsonify(profili)
     else:
         return redirect("http://storygram.it/login/", code=302)
     
@@ -431,7 +447,7 @@ def create_post():
         
         elif request.method == 'GET':
             # carico la pagina per la creazione di un nuovo post 
-            return render_template("post_create.html", ID=session["IDUtente"])
+            return render_template("post_create.html", ID=session["IDUtente"],session_userid=session['IDUtente'], theme = session["theme"])
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
@@ -484,8 +500,10 @@ def post_comment():
                 return('', 200)
             return('', 400)
         elif request.method == "GET":
-            
+
             post_id = request.args.get('post_id', type=int)
+            print("id post dei commenti da vedere ")
+            print(post_id)
             try:
                 query_commenti = f"SELECT * FROM Commento INNER JOIN Profilo ON (IDProfiloProvenienza = IDProfilo) WHERE IDPostDestinazione = '{post_id}'"
                 query_commenti = executeQuery(query_commenti)
@@ -513,7 +531,7 @@ def post_comment():
 # ---------------- route per gestione messaggi ---------------------- #
 @server.route('/messages/', methods=['GET', 'POST'])
 def messages():
-    return render_template("message_page_desktop.html", ID=1234)
+    return render_template("message_page_desktop.html", ID=1234, session_userid=session['IDUtente'], theme = session["theme"])
     if session['logged_in'] == True:
         if request.method == 'GET':
 
@@ -553,7 +571,7 @@ def story():
                     AND Data >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
             '''
             story = executeQuery(query)
-            return render_template("story.html", story=story) # !!  pagina poi da definire !!
+            return render_template("story.html", story=story, theme = session["theme"]) # !!  pagina poi da definire !!
         else:
             return jsonify({"message": "Metodo non consentito"}), 405
     else:
@@ -601,7 +619,7 @@ def get_followed_profiles():
     if(session.get("logged_in")):
         profile_id = request.args.get('profile_id') # ottengo dal get l'id del profilo di cui si vogliono ottenere i seguiti 
         query = f'''
-                SELECT Profilo.*
+                SELECT IDProfilo, Nome, Cognome, PathImmagineProfilo
                 FROM Segue
                 JOIN Profilo ON Segue.Seguito = Profilo.IDProfilo
                 WHERE Segue.Seguace = {profile_id};
@@ -618,7 +636,7 @@ def get_followers_profiles():
     if(session.get("logged_in")):
         profile_id = request.args.get('profile_id') # ottengo dal get l'id del profilo di cui si vogliono ottenere i seguaci
         query = f'''
-                SELECT Profilo.*
+                SELECT IDProfilo, Nome, Cognome, PathImmagineProfilo
                 FROM Segue
                 JOIN Profilo ON Segue.Seguace = Profilo.IDProfilo
                 WHERE Segue.Seguito = {profile_id};

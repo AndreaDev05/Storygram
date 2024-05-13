@@ -6,9 +6,14 @@
     <div class="col-lg-1 col-2 remote-user-profile-img">
         <img class="user-icon" src alt="" height="48px" width="48px">
     </div>
-    <div class="col-lg-11 col-10 remote-user-name">
+    <div class="col-lg-11 col remote-user-name">
         {{ nomeUtente }}
         Nome Utente
+    </div>
+    <div class="col-2 close-btn-message">
+        <button class="btn" onclick="close_chat()">
+            <img class="close-icon" src alt="" height="24px" width="24px">
+        </button>
     </div>
 </div>
 <div class="row main-messages-box">
@@ -51,13 +56,13 @@
     </div>
     <div class="col-12 message-bar-box">
         <div class="row bar message-bar m-auto">
-            <div class="col-1 bar-icon">
+            <div class="col-2 col-sm-1 bar-icon">
                 <img class="keyboard-icon" src alt="">
             </div>
-            <div class="col-10">
+            <div class="col col-sm-10">
                 <input class="input-bar"  placeholder="Scrivi un messaggio...">
             </div>
-            <div class="col-1 bar-icon">
+            <div class="col-2 col-sm-1 bar-icon">
                 <button class="btn btn-send">
                     <img class="send-icon" src alt="">
                 </button>
@@ -97,12 +102,18 @@
         //rischiesta per ottenere le chat
         $.ajax({
             success:function(){
-                console.log("sos");
-                t.parent().parent().addClass("d-none");
-                $(".main-messages-box").addClass("selected-chat");
+                if(screen.width <= 575){
+                    t.parent().parent().addClass("d-none");
+                    $(".main-messages-box").addClass("selected-chat");
+                };
             }
         });
     });
+
+    function close_chat(obj){
+        $(".stories").removeClass("d-none");
+        $(".main-messages-box").removeClass("selected-chat");
+    }
 </script>
 
 {% endblock %}
