@@ -68,7 +68,9 @@
 {% endblock %}
 
 {% block rightside %}
-
+<div class="row logo-box">
+    <span id="logo">Storygram</span>
+</div>
 <div class="row contacts-box">
     <div class="col-12 contact" id="{{ IDUtenteRemoto }}">
         <div class="row">
@@ -88,12 +90,17 @@
 {% block script %}
 
 <script>
-    $(".contanct").on("click",function(){
+    $(".contact").on("click",function(){
         idUtenteSel = $(this).id;
+        var t = $(this);
 
         //rischiesta per ottenere le chat
         $.ajax({
-            
+            success:function(){
+                console.log("sos");
+                t.parent().parent().addClass("d-none");
+                $(".main-messages-box").addClass("selected-chat");
+            }
         });
     });
 </script>

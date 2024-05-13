@@ -596,6 +596,25 @@ def stop_segui(id_profilo_da_stop_seguire):
     else:
         return redirect("http://storygram.it/login/", code=302)
 
+@server.route('/get_followed_profiles', methods=['GET'])
+def get_followed_profiles():
+    if(session.get("logged_in")):
+        profile_id = request.args.get('profile_id') # ottengo dal get l'id del profilo di cui si vogliono ottenere i seguiti 
+        query = f'''
+                SELECT Profilo.*
+                FROM Segue
+                JOIN Profilo ON Segue.Seguito = Profilo.IDProfilo
+                WHERE Segue.Seguace = {profile_id};
+                '''
+        lista_seguiti = executeQuery(query)
+        print ( lista_seguiti)
+        print (jsonify(lista_seguiti))
+        return jsonify(lista_seguiti)
+    else: 
+        return redirect("http://storygram.it/login/", code=302)
+     
+
+
 if __name__ == "__main__":
 
     # avviamo l'applicazione in modalità debug

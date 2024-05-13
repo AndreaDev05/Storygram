@@ -5,12 +5,7 @@
     <button class="btn story-user"> 
         <span class="icon-story">
             <img class="
-            {% if path_imgP != '' and seen %}
-                'story-user-icon seen'
-            {% endif %}
-            {% if path_imgP != '' %}
-                'story-user-icon'
-            {% endif %}"
+            story-user-icon"
             src="{{path_imgP}}" alt='user-icon'>
         </span>
         <span class="story-text">{{ nomeUtente }}</span>
@@ -331,7 +326,13 @@
             }
 
             function close_comment(){
-                $(".comment-overlay").addClass("d-none");
+                $(".comment-box").removeClass("opened");
+                if(screen.width <= 575)
+                    setTimeout(function(){
+                        $(".comment-overlay").addClass("d-none");
+                    }, 1000);
+                else
+                    $(".comment-overlay").addClass("d-none");
             }
         </script>
         {% block script %}

@@ -120,7 +120,13 @@
 
     function comment(obj){
         $(".comment-overlay").removeClass("d-none");
-        $(".comment-box").addClass("opened");
+        if(screen.width <= 575)
+            setTimeout(function(){
+                $(".comment-box").addClass("opened");
+            }, 200);
+        else
+            $(".comment-box").addClass("opened");
+
         scrImgProfile = $(obj).parent().parent().find(".img-post").attr("src");
         nomeUtente = $(obj).parent().parent().find(".post-name").text();
         scrPost = $(obj).parent().parent().find(".img-post-box img").attr("src");
