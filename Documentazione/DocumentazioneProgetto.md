@@ -285,6 +285,37 @@ questo per motivi di compatibilità del sito e di sicurezza, per evitare che non
 
 ## Front-End
 
+### Utilizzo di bootstrap
+
+Per l'implementazione del frontend è stato utilizzato per la maggior parte bootsrap in accopiata di classi custom.
+Le maggiori classi utilizzate sono state quelle di row e col che hanno permesso la relizzazione di una logica a righe e colonne che rendono molto più semplice la realizzazione di pagine responsive.
+
+### Responsive
+
+Per la gestione del responsive sono state ulizzazte delle classi responsive già implementate da bootstap insieme a delle classi custom gestite poi attraverso i @media, qui sotto riportato un esempio:
+
+```html
+
+.comment-box{
+  width:59.11vw;
+  height: 66.67vh;
+  background-color: var(--bs-body-bg);
+  border-radius: 12px;
+}
+
+@media(max-width: 1280px){
+  .comment-box{
+    width:88.67vw;
+    height:70.31vh;
+  }
+}
+
+```
+
+### Animazione
+
+Alcuni elementi presentano delle animazioni fatte attraverso css e l'attributo transition
+
 ### PWA del sito
 
 per rendere il nostro social storygram una PWA e quindi renderla scaricabile direttamente dei dispositivi mobili e non, abbiamo semplicemente aggiunto il file JSON necessario a far ciò (il manifest.json) e l’icona personalizzata per la PWA, salvata nelle risorse del sito nel nostro PVS.  qui sotto è possibile consultare il manifest di storygram: 
@@ -304,10 +335,6 @@ per rendere il nostro social storygram una PWA e quindi renderla scaricabile dir
     ],
 }
 ```
-
-### service worker del sito
-
-per rendere disponibile una parte dei contenuti di storygram anche offline, come richiesto dalla consegna che richiede sia possibile visualizzare almeno 10 post della home anche senza connessione, abbiamo creato un service worker del sito ….. 
 
 ## Difficoltà riscontrate
 
