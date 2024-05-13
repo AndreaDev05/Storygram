@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="{{url_for('static', filename='bootstrap-5.3.3-dist/css/bootstrap.css')}}">
         <script src="{{url_for('static', filename='bootstrap-5.3.3-dist/js/jquery-3.7.1.min.js')}}"></script>
         <title> STORYGRAM </title>
+        <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
     </head>
     <body>
         <div class="row vh-sm-100 m-auto d-flex flex-row-reverse justify-content-start">
@@ -239,7 +240,7 @@
 	
                 if($(document).ready()){
                     var keycode = (event.keyCode ? event.keyCode : event.which);
-                    if(keycode == '13'){
+                    if(keycode == '13' && $(".input-bar").val() != ""){
                         
                         $.ajax(
                         {
@@ -249,7 +250,9 @@
                                 input_cerca_utente: $(".input-bar").val()
                             },
                             success:function(profili){
-                                data.forEach(d => {
+                                $('#lista-utenti').html("");
+                                $(".input-bar").val("");
+                                profili.forEach(d => {
                                     $("#lista-utenti").append(`
                                     <div class="col-12 contact" id="${d["IDProfilo"]}">
                                         <div class="row">
