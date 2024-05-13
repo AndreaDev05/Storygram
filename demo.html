@@ -72,13 +72,39 @@
 					<br>
 				</section>
 				<section>
-					<h2>Basement Level 1</h2>
-					<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.
-					</p>
+					<h2>Schema Del DB</h2>
+					<img src="SchemaDB.png">
 				</section>
 				<section>
-					<h2>Basement Level 2</h2>
-					<p>That's it, time to go back up.</p>
+					<h2>Connessione al DB</h2>
+					<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="">
+						from flask import jsonify
+						import pymysql
+						import static.credentials as credentials
+						
+						# funzione per eseguire una query su database
+						def executeQuery(query):
+							#   creo una connessione al database
+							connection = pymysql.connect(
+								host=credentials.host,
+								user=credentials.user,
+								password=credentials.password,
+								db=credentials.database,
+								cursorclass=pymysql.cursors.DictCursor
+							)
+						
+							try:
+								with connection:
+									with connection.cursor() as cursor:
+										cursor.execute(query) # esegue la query
+										connection.commit() # permette di salvare le modifiche fatte al database
+										res = cursor.fetchall() # restituisce i risultati della query eseguita
+										return res
+							except Exception as e: # se avviene un errore ritorno -1 come codice di errore
+								print(e)
+								return jsonify({"message": "Errore durante l'esecuzione della query"}), 500
+													
+					</code></pre>
 					<br>
 				</section>
 			</section>
@@ -95,7 +121,7 @@
 					<h2>Scritto Con Flask</h2>
 					<p>micro-framework Web scritto in Python, basato sullo strumento Werkzeug WSGI e con il motore di
 						template Jinja2</p>
-					<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="|4,8-11|17|22-24">
+					<pre data-id="code-animation"><code class="hljs javascript" data-trim data-line-numbers="">
 							server = Flask(__name__)
 
 							# set del timeout della sessione 
@@ -212,34 +238,25 @@
 					<br>
 				</section>
 				<section>
-					<h2>Obbiettivi di progetto</h2>
-					<p>Il socialnetwork ambientato nel passato dovrà avere funzioni avanzate come:</p>
-					<ul>
-						<li>Inserimento di post</li>
-						<li>Commenti</li>
-						<li>Mi piace</li>
-						<li>Creazione e visualizzazione dei profili</li>
-						<li>Invio di messaggi privati</li>
-					</ul>
+					<h2>Obbiettivo del progetto</h2>
+					<p>realizzare uno strumento di svago per ogni utente che voglia “giocare di ruolo” condividendo contenuti, 
+					commentando e anche scambiandosi messaggi con altri utenti impersonificati. 
+				   </p>
 					<br>
 				</section>
 				<section>
-					<h2>Prodotti principali</h2>
-					<p>Detto ciò i prodotti principali sono:</p>
-					<ul>
-						<li>Pagina Web</li>
-						<li>PWA scaricabile da smartphone e computer desktop</li>
-					</ul>
-					<br>
+
 				</section>
 				<section>
-					<h2>Diagramma di Gantt</h2>
-					<img src="gantt.png" style="width: 150%;">
-					<br>
+					<h2>Suddivisione e Gestione del lavoro</h2>
 				</section>
 				<section>
-					<h2>WBS e diagramma di precedenza PDM</h2>
-					<img src="wbs.png">
+					<h2>Gantt del progetto</h2>
+					<img src="gantt.png" style="width: 100%;" alt="Gantt del progetto">
+				</section>
+				<section>
+					<h2>WBS del progetto</h2>
+					<img src="wbs.png" style="width: 400%;">
 					<br>
 				</section>
 				<section>
@@ -306,8 +323,8 @@
 				</section>
 				<section>
 					<h2>Analisi dei rischi</h2>
-					<p>Nonostante il progetto venga realizzato interamente da studenti della stessa classe possono esserci comunque possibili rischi.
-						I possibili rischi rilevati sono: </p>
+					<p>Nonostante il progetto sia svolot da studenti della stessa classe,
+						I possibili rischi che abbiamo rilevato sono: </p>
 					<ul>
 						<li>Problemi di salute</li>
 						<li>Mancanza di collaborazione</li>
@@ -334,8 +351,9 @@
 					<h2>Difficoltà riscontrate</h2>
 					<p>Le difficoltà riscontrate sono:</p>
 					<ul>
-						<li>Esempio 1:</li>
-						<li>Esempio 2:</li>
+						<li>utilizzo di css</li>
+						<li>utilizzo di javascript</li>
+						<li>visualizzazione dei like</li>
 					</ul>
 					<br>
 				</section>
@@ -343,18 +361,16 @@
 					<h2>Possibili upgrade</h2>
 					<p>I possibili upgrade sono:</p>
 					<ul>
-						<li>Esempio 1</li>
-						<li>Esempio 2</li>
+						<li>Implementazione completa della messaggistica </li>
+						<li>Terminazione delle Storie</li>
+						<li>Miglioramento dell'interfaccia grafica</li>
+						<li>Miglioramento del'infrastruttura hardware/software</li>
 					</ul>
 					<br>
 				</section>
 				<section>
-					<h2>Conclusione</h2>
 					<p>Per un analisi del progetto più dettagliata rimandiamo alla documentazione completa</p>
 					<br>
-				</section>
-				<section>
-					<h2>Grazie per l'attenzione</h2>
 				</section>
 			</section>
 
